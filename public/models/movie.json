@@ -1,0 +1,29 @@
+{
+  "name": "Movie",
+  "plural": "Movies",
+  "base": "Base",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "year": {
+      "type": "string",
+      "required": true
+    },
+    "category": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "humans": {
+      "type": "hasMany",
+      "model": "Human",
+      "foreignKey": "",
+      "through": "HumanHasMovie"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

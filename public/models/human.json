@@ -1,0 +1,41 @@
+{
+  "name": "Human",
+  "plural": "Humans",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "curps": {
+      "type": "hasOne",
+      "model": "Curp",
+      "foreignKey": ""
+    },
+    "things": {
+      "type": "hasAndBelongsToMany",
+      "model": "Thing",
+      "foreignKey": ""
+    },
+    "movies": {
+      "type": "hasMany",
+      "model": "Movie",
+      "foreignKey": "",
+      "through": "HumanHasMovie"
+    },
+    "vejentud": {
+      "type": "belongsTo",
+      "model": "Age",
+      "foreignKey": "vejentudId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

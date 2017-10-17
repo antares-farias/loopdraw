@@ -1,0 +1,29 @@
+{
+  "name": "HumanHasMovie",
+  "plural": "HumanHasMovies",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "Quant": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "movie": {
+      "type": "belongsTo",
+      "model": "Movie",
+      "foreignKey": ""
+    },
+    "human": {
+      "type": "belongsTo",
+      "model": "Human",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

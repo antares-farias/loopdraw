@@ -1,0 +1,468 @@
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=5,IE=9" ><![endif]-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grapheditor</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<base href="/" target="_blank">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="styles/grapheditor.css">
+	<script type="text/javascript">
+		// Parses URL parameters. Supported parameters are:
+		// - lang=xy: Specifies the language of the user interface.
+		// - touch=1: Enables a touch-style user interface.
+		// - storage=local: Enables HTML5 local storage.
+		// - chrome=0: Chromeless mode.
+		//mxBasePath = 'new2/';
+		mxImageBasePath  = '/src/images';
+		var urlParams = (function(url)
+		{
+			var result = new Object();
+			var idx = url.lastIndexOf('?');
+	
+			if (idx > 0)
+			{
+				var params = url.substring(idx + 1).split('&');
+				
+				for (var i = 0; i < params.length; i++)
+				{
+					idx = params[i].indexOf('=');
+					
+					if (idx > 0)
+					{
+						result[params[i].substring(0, idx)] = params[i].substring(idx + 1);
+					}
+				}
+			}
+			
+			return result;
+		})(window.location.href);
+	
+		// Default resources are included in grapheditor resources
+		mxLoadResources = false;
+	</script>
+	<script type="text/javascript" src="js/Init.js"></script>
+	<script type="text/javascript" src="jscolor/jscolor.js"></script>
+	<script type="text/javascript" src="sanitizer/sanitizer.min.js"></script>
+	<script type="text/javascript" src="src/js/mxClient.js"></script>
+	<script type="text/javascript" src="js/EditorUi.js"></script>
+	<script type="text/javascript" src="js/Editor.js"></script>
+	<script type="text/javascript" src="js/Sidebar.js"></script>
+	<script type="text/javascript" src="js/Graph.js"></script>
+	<script type="text/javascript" src="js/Shapes.js"></script>
+	<script type="text/javascript" src="js/Actions.js"></script>
+	<script type="text/javascript" src="js/Menus.js"></script>
+	<script type="text/javascript" src="js/Format.js"></script>
+	<script type="text/javascript" src="js/Toolbar.js"></script>
+	<script type="text/javascript" src="js/Dialogs.js"></script>
+	<script type="text/javascript" src="js/xml2json.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body class="geEditor">
+	<script type="text/javascript">
+		// Extends EditorUi to update I/O action states based on availability of backend
+		var graph;
+		var parent;//Maybe we delete this;
+		var layout;
+		var editorUiInit;
+		//var loadXML = false;
+		var loadXML = true;
+		(function()
+		{
+			editorUiInit = EditorUi.prototype.init;
+			
+			EditorUi.prototype.init = function()
+			{
+				editorUiInit.apply(this, arguments);
+				this.actions.get('export').setEnabled(false);
+
+				// Updates action states which require a backend
+				if (!Editor.useLocalStorage)
+				{
+					
+					mxUtils.post(OPEN_URL, '', mxUtils.bind(this, function(req)
+					{
+						console.log("done here");
+						var enabled = req.getStatus() != 404;
+						this.actions.get('open').setEnabled(enabled || Graph.fileSupport);
+						this.actions.get('import').setEnabled(enabled || Graph.fileSupport);
+						this.actions.get('save').setEnabled(enabled);
+						this.actions.get('saveAs').setEnabled(enabled);
+						this.actions.get('export').setEnabled(enabled);
+					}));
+				}
+				graph = this.editor.graph;
+				parent = graph.getDefaultParent();
+				console.log(graph.getSelectionModel());
+				/*
+				
+				layout = new mxCompactTreeLayout(graph);
+				*/
+				layout = new mxFastOrganicLayout(graph);
+				/*
+
+				layout = new mxGraphLayout(graph);//nada
+				layout = new mxParallelEdgeLayout(graph);//nada
+				layout = new mxEdgeLabelLayout(graph);//nada
+				layout = new mxCompositeLayout(graph);//no sierve
+
+				layout = new mxStackLayout(graph);
+				layout = new mxRadialTreeLayout(graph);
+				layout = new mxCircleLayout(graph);
+				layout = new mxPartitionLayout(graph);
+				*/
+				//layout.forceConstant = 280;
+				/*var v1 = createModel(20, 20);
+				var v2 = createModel(150, 120);
+				var e2 = graph.insertRelationEdge(parent, null, '', v1, v2, '',{
+						"number":"many",
+						"tag":"Items",
+					});*/
+				getModels(this);
+				document.body.insertBefore(mxUtils.button('Organic Layout',
+					function(evt)
+					{
+						graph.getModel().beginUpdate();
+						try
+						{
+							layout.execute(parent);
+						}
+						catch (e)
+						{
+							throw e;
+						}
+						finally
+						{
+							if (false)
+							{
+								// Default values are 6, 1.5, 20
+								var morph = new mxMorphing(graph, 10, 1.7, 20);
+								morph.addListener(mxEvent.DONE, function()
+								{
+									console.log('endupdate');
+									graph.getModel().endUpdate();
+								});
+								morph.startAnimation();
+							}
+							else
+							{
+								graph.getModel().endUpdate();
+							}
+						}
+					}
+				), document.body.firstChild);
+				 //var edytor = new EditorUi(new Editor());
+               /* var doc = mxUtils.parseXml('<root><mxCell id="2" value="Hello," vertex="1"><mxGeometry x="20" y="20" width="80" height="30" as="geometry"/></mxCell><mxCell id="3" value="World!" vertex="1"><mxGeometry x="200" y="150" width="80" height="30" as="geometry"/></mxCell><mxCell id="4" value="" edge="1" source="2" target="3"><mxGeometry relative="1" as="geometry"/></mxCell></root>'); 
+                var doc = mxUtils.parseXml('<mxGraphModel><root>><mxCell id="1" parent="0"/><mxCell id="2" value="Hello," vertex="1"  parent="1" ><mxGeometry x="20" y="20" width="80" height="30" as="geometry"/></mxCell><mxCell id="3" value="World!" vertex="1" parent="1" ><mxGeometry x="200" y="150" width="80" height="30" as="geometry"/></mxCell><mxCell id="4" value="" edge="1" source="2" target="3" parent="1" ><mxGeometry relative="1" as="geometry"/></mxCell></root></mxGraphModel>'); 
+        		this.editor.setGraphXml(doc.documentElement);*/
+			};
+	
+			// Adds required resources (disables loading of fallback properties, this can only
+			// be used if we know that all keys are defined in the language specific file)
+			mxResources.loadDefaultBundle = false;
+			var bundle = mxResources.getDefaultBundle(RESOURCE_BASE, mxLanguage) ||
+				mxResources.getSpecialBundle(RESOURCE_BASE, mxLanguage);
+
+			// Fixes possible asynchronous requests
+			mxUtils.getAll([bundle, STYLE_PATH + '/default.xml'], function(xhr)
+			{
+				// Adds bundle text to resources
+				mxResources.parse(xhr[0].getText());
+				
+				// Configures the default graph theme
+				var themes = new Object();
+				themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement(); 
+				
+				// Main
+				new EditorUi(new Editor(urlParams['chrome'] == '0', themes));
+			}, function()
+			{
+				document.body.innerHTML = '<center style="margin-top:10%;">Error loading resource files. Please check browser console.</center>';
+			});
+		})();
+		function parseXml(xml) {
+			var dom = null;
+			if (window.DOMParser) {
+				try { 
+					dom = (new DOMParser()).parseFromString(xml, "text/xml"); 
+				} 
+				catch (e) { dom = null; }
+			}
+			else if (window.ActiveXObject) {
+				try {
+					dom = new ActiveXObject('Microsoft.XMLDOM');
+					dom.async = false;
+					if (!dom.loadXML(xml)) // parse error ..
+
+						window.alert(dom.parseError.reason + dom.parseError.srcText);
+				} 
+				catch (e) { dom = null; }
+			}
+			else
+				alert("cannot parse xml string!");
+			return dom;
+		}
+		function dropithot(){
+			console.log(graph.getModel());
+		}
+		function applyLayout(){
+			graph.getModel().beginUpdate();
+			try
+			{
+				// Creates a layout algorithm to be used
+				// with the graph
+				layout.forceConstant = 280;
+				layout.execute(parent);
+				//console.log('done try');
+			}
+			catch (e)
+			{
+				throw e;
+			}
+			finally
+			{
+				//console.log('morphin time');
+				var morph = new mxMorphing(graph);
+				morph.addListener(mxEvent.DONE, function()
+				{
+					graph.getModel().endUpdate();
+					//console.log('endupdate');
+					//new mxDivResizer(graph);
+				});
+				
+				//console.log('start anima');
+				morph.startAnimation();
+			}
+		}
+		var count_asinc = 0;
+		var temp_json = [];
+		function getModels(editor_ui){
+			if(loadXML){
+				$.getJSON('http://localhost:3000/models_data', function(json) {
+						//console.log(json);
+						//var path_xml = "../../../"+json[0].saved_dir+"/ER_Model.xml";
+						var path_xml = "static/ER_Model.xml";
+						var xhr = new XMLHttpRequest();
+						xhr.onreadystatechange = function() {
+							if (xhr.readyState == 4 && xhr.status == 200) {
+								//document.getElementById('placeholder').innerHTML = xhr.responseText;
+								console.log(mxUtils);
+								console.log(graph);
+								console.log(editorUiInit);
+								console.log(editor_ui);
+								//console.log(xhr.responseText);
+								//mxUtils.load("static/ER_Model.xml");
+								var xml = '<root><mxCell id="2" value="Hello," vertex="1"><mxGeometry x="20" y="20" width="80" height="30" as="geometry"/></mxCell><mxCell id="3" value="World!" vertex="1"><mxGeometry x="200" y="150" width="80" height="30" as="geometry"/></mxCell><mxCell id="4" value="" edge="1" source="2" target="3"><mxGeometry relative="1" as="geometry"/></mxCell></root>';
+								var new_xml = xhr.responseText;
+								new_xml = new_xml.replace('<mxCell id="0" parent="0"/>', "");
+								new_xml = new_xml.replace(/marginTop=6;/g, "marginTop=30;");
+								var json = xml2json(parseXml(new_xml));
+								//json = json.replace("undefined", "");
+								//json = JSON.parse(json);
+								//console.log(json);
+								//var doc = mxUtils.parseXml(xhr.responseText);
+								//var doc = mxUtils.parseXml('<mxGraphModel><root>><mxCell id="1" parent="0"/><mxCell id="2" value="Hello," vertex="1"  parent="1" ><mxGeometry x="20" y="20" width="80" height="30" as="geometry"/></mxCell><mxCell id="3" value="World!" vertex="1" parent="1" ><mxGeometry x="200" y="150" width="80" height="30" as="geometry"/></mxCell><mxCell id="4" value="" edge="1" source="2" target="3" parent="1" ><mxGeometry relative="1" as="geometry"/></mxCell></root></mxGraphModel>'); 
+
+									var doc = mxUtils.parseXml(new_xml);
+									var codec = new mxCodec(doc);
+									codec.decode(doc.documentElement, graph.getModel());
+								
+								
+								
+								
+								//graph.model.endUpdate();
+								//console.log('done all');
+								
+								//window.open( "static/ER_Model.xml");
+								//editor_ui.editor.setGraphXml(doc.documentElement);
+								//var graphContainer = $get('graphContainer');
+								//console.log(graphContainer);
+								//graphContainer.decode(doc.documentElement);
+								
+										
+							}
+						}
+						xhr.open('GET', path_xml);
+						xhr.send();
+				});
+			}
+			/*var doc = mxUtils.parseXml(new_xmlt);
+							var codec = new mxCodec(doc);
+							console.log(editor_ui.actions.actions.openLink.funct);*/
+			/*var elt = doc.documentElement.firstChild;
+							var cells = [];
+							var delta = mxClipboard.insertCount * mxClipboard.STEPSIZE;
+							while (elt != null){                
+								cells.push(codec.decodeCell(elt));
+								graph.refresh();
+								elt = elt.nextSibling;
+							}
+							graph.model.beginUpdate();
+
+							//graph.addCells(cells);
+							//graph.model.endUpdate();
+							try
+							{
+							for (var i = 0; i < cells.length; i++)
+							{
+								cells[i] = graph.importCells([cells[i]], delta, delta, parent)[0];
+							}
+							}
+							finally
+							{
+							graph.model.endUpdate();
+							}*/
+			//old fix json get
+			var arr_files  = [
+				'human.json', 
+				'age.json', 
+				'base.json',
+				'curp.json',
+				'human-has-movie.json',
+				'movie.json',
+				'thing.json'
+			]
+			$.getJSON('http://localhost:3000/explorer/swagger.json', function(json) {
+					console.log(json);
+				});
+			if(!loadXML){
+				arr_files.forEach(function(item, idx){
+					count_asinc++;
+					$.getJSON('models/'+item, function(json) {
+						temp_json.push(json);
+						count_asinc--;
+						isDone();
+					});
+				});
+			}
+		}
+		function isDone(){
+			if(count_asinc == 0){
+				temp_json.forEach(function(json, idx){
+					createModel(0,0,json);
+				});
+			}
+		}
+		var models = {};
+		var throughs = {};
+		function createModel(x, y,json){
+			var parent = graph.getDefaultParent();
+			//var v1 = graph.insertVertex(parent, null, 'v1', 20, 20, 80, 30,'strokeColor=none');//;autoSizeCell=1resizeParent=1;resizeParentMax=1;resizeLast=1;marginTop=26;
+			var v1 = graph.insertVertex(parent, null, "<b>"+json.name+"</b></br><i>&lt;"+json.base+"&gt;</i>", x, y,180, 0,"swimlane;fontStyle=0;childLayout=stackLayout;marginTop=6;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;collapsible=1;marginBottom=10;swimlaneFillColor=#ffffff;portConstraint=eastwest;rounded=1;shadow=1;html=1;");
+			//var v1_title = graph.insertVertex(v1, null, "<b>"+json.name+"</b></br><i>&lt;"+json.base+"&gt;</i>", x, y,180, 30,"portConstraint=eastwest;rounded=1;shadow=1;html=1;");
+			if(!models[json.name]) {models[json.name]={};}
+			console.log(v1);
+			mxEvent.addListener(graph.container, 'keypress', mxUtils.bind(v1, function(evt)
+			{
+			  console.log(evt);
+			  if (!graph.isEditing() && !graph.isSelectionEmpty() && evt.which !== 0 &&
+			      !mxEvent.isAltDown(evt) && !mxEvent.isControlDown(evt) && !mxEvent.isMetaDown(evt))
+			  {
+			    graph.startEditing();
+
+			    if (mxClient.IS_FF)
+			    {
+			      graph.cellEditor.textarea.value = String.fromCharCode(evt.which);
+			    }
+			  }
+			}));
+			models[json.name]['vertex'] = v1;
+			models[json.name]['json'] = json;
+			models[json.name]['rel'] = {};
+			for (var key in json.properties) {//autoSizeCell
+			  if (json.properties.hasOwnProperty(key)) {
+				properties = "<p>"+key+":<b>"+json.properties[key].type+"</b></p>";//autoSizeCell=1;autoSizeCell=1;resizeParent=1;h
+				var poper = graph.insertVertex(v1, null, properties,20, 20, 80, 30,'strokeColor=none;html=1;');
+			  }
+			}
+			graph.insertVertex(v1, null, '',20, 20, 1, 1,"line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];rounded=1;portConstraint=eastwest;");
+			//var v2 = graph.insertVertex(v1, null, 'v1', 20, 20, 80, 30,'strokeColor=none');
+			for (var key in json.relations) {
+			  if (json.relations.hasOwnProperty(key)) {
+				rel = "<p>"+((json.relations[key].foreignKey)?json.relations[key].foreignKey:((json.relations[key].type=='belongsTo')?key+"Id":key))+":<b>"+json.relations[key].model+"</b></p>";
+//autoSizeCell=1;resizeParent=1;
+				var poper = graph.insertVertex(v1, null, rel,20, 20, 80, 30, 'strokeColor=none;portConstraint=eastwest;rounded=1;;html=1;');
+				models[json.name]['rel'][json.relations[key].model] = {
+					'json':json.relations[key],
+					'vertex': poper
+					};
+				}
+			}
+			createRelation();
+			applyLayout();
+			return v1;
+		}
+		var arr_models = [];
+		function createRelation(){
+			debug('createRelation', models);
+			for (var model in models) {
+				arr_models.push(model);
+				//if(!models[model].done){
+					var has_relation = false;
+					for(var relation in models[model]['rel']){
+						var this_rel =models[model]['rel'][relation]['vertex'];
+						if(throughs[model]){
+							console.log(models[model]['rel']);
+							var e2 = graph.insertRelationEdge(parent, null, '', models[model]['rel'][throughs[model][0]]['vertex'], models[throughs[model][0]]['vertex'], '',{
+								"number":"hasMany",
+								"tag":"hasMany",
+							});
+							var e2 = graph.insertRelationEdge(parent, null, '', models[model]['rel'][throughs[model][1]]['vertex'], models[throughs[model][1]]['vertex'], '',{
+								"number":"hasMany",
+								"tag":"hasMany",
+							});
+							//invisible links
+							var e1 = graph.insertEdge(parent, null, '', models[model]['vertex'], models[throughs[model][0]]['vertex'], 'endArrow=none;endSize=12;startArrow=none;startSize=14;dashed=1;startFill=1;strokeColor=#FFFFFF;');
+							var e1 = graph.insertEdge(parent, null, '', models[model]['vertex'], models[throughs[model][1]]['vertex'], 'endArrow=none;endSize=12;startArrow=none;startSize=14;dashed=1;startFill=1;strokeColor=#FFFFFF;');
+							throughs[model] = false;
+						}
+						//console.log(this_rel);
+						/*if(models[model]['rel'][relation]['json'].through){
+							console.log('Changin relation :'+models[model]['rel'][relation]['json'].through);
+							relation = models[model]['rel'][relation]['json'].through;
+						}*/
+						if(models[relation] && !models[model]['rel'][relation].done){
+
+							debug('createRelation', [relation,model, models[relation]]);
+							if(models[relation]['rel'][model]){
+								var  this_model_rel=models[relation]['rel'][model]['vertex'];
+								//console.log(this_model_rel);
+								debug('createRelation_cell', this_model_rel);
+								if(models[model]['rel'][relation]['json'].type != 'belongsTo'){
+									var tag = models[model]['rel'][relation]['json'].type;
+									if(models[model]['rel'][relation]['json'].through){
+										throughs[models[model]['rel'][relation]['json'].through] = [model, relation];
+										tag += "Through";
+										console.log(throughs);
+									}
+									var e1 = graph.insertEdge(parent, null, '', models[model]['vertex'], models[relation]['vertex'], 'endArrow=none;endSize=12;startArrow=none;startSize=14;dashed=1;startFill=1;strokeColor=#FFFFFF;');
+									var e2 = graph.insertRelationEdge(parent, null, '', this_rel, this_model_rel, '',{
+										"number":models[model]['rel'][relation]['json'].type,
+										"tag":tag,
+									});
+									has_relation = true;
+									models[model]['rel'][relation].done = true;
+									models[relation]['rel'][model].done = true;
+								}
+							}
+						}
+					}
+					if(!has_relation){
+						//var e1 = graph.insertEdge(parent, null, '', models[model]['vertex'], models[arr_models[0]]['vertex'], 'endArrow=none;endSize=12;startArrow=none;startSize=14;dashed=1;startFill=1;strokeColor=#FFFFFF;');
+					}
+					//models[model].done = true;
+				//}
+			}
+		}
+		function debug(source, msj){
+			if(
+				source != "getModels" &&
+				source != "createRelation_cell" &&
+				true
+				){
+				//console.log(source+":",msj);
+			}
+		}
+	</script>
+</body>
+</html>

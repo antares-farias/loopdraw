@@ -1,0 +1,25 @@
+{
+  "name": "Curp",
+  "plural": "Curps",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "code": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "human": {
+      "type": "belongsTo",
+      "model": "Human",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

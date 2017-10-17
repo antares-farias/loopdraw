@@ -1,0 +1,25 @@
+{
+  "name": "Thing",
+  "plural": "Things",
+  "base": "Base",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "humans": {
+      "type": "hasAndBelongsToMany",
+      "model": "Human",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

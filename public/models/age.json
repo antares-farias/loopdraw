@@ -1,0 +1,25 @@
+{
+  "name": "Age",
+  "plural": "Ages",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "years": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "viejos": {
+      "type": "hasMany",
+      "model": "Human",
+      "foreignKey": "viejitosId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
