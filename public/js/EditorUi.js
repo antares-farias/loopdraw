@@ -3297,7 +3297,6 @@ EditorUi.prototype.saveFile = function(forceDialog)
  */
 EditorUi.prototype.saveFileServer = function(forceDialog)
 {
-	console.log("asdf");
 	this.editor.filename = "temp.xml";
 	if (!forceDialog && this.editor.filename != null)
 	{

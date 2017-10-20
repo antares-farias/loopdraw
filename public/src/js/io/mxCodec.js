@@ -420,6 +420,7 @@ mxCodec.prototype.decode = function(node, into)
 		if (dec != null)
 		{
 			obj = dec.decode(this, node, into);
+			//console.log("O=bj mxcodec",node,obj);
 		}
 		else
 		{
@@ -427,7 +428,6 @@ mxCodec.prototype.decode = function(node, into)
 			obj.removeAttribute('as');
 		}
 	}
-	
 	return obj;
 };
 

@@ -4457,6 +4457,7 @@ DiagramFormatPanel.prototype.init = function()
 		this.container.appendChild(this.addOptions(this.createPanel()));
 		this.container.appendChild(this.addPaperSize(this.createPanel()));
 		this.container.appendChild(this.addStyleOps(this.createPanel()));
+		this.container.appendChild(this.addLoopdrawOps(this.createPanel()));
 	}
 };
 
@@ -4869,6 +4870,47 @@ DiagramFormatPanel.prototype.addStyleOps = function(div)
 		this.editorUi.actions.get('clearDefaultStyle').funct();
 	}));
 	
+	btn.setAttribute('title', mxResources.get('clearDefaultStyle') + ' (' + this.editorUi.actions.get('clearDefaultStyle').shortcut + ')');
+	btn.style.width = '202px';
+	div.appendChild(btn);
+
+	return div;
+};
+
+/**
+ * Adds the export save funcitons to diagram
+ * */
+DiagramFormatPanel.prototype.addLoopdrawOps= function(div)
+{
+	console.log('addLoopdrawOps')
+	var btn = mxUtils.button(mxResources.get('compare'), mxUtils.bind(this, function(evt)
+	{
+		this.editorUi.actions.get('editData').funct();
+	}));
+
+	btn.setAttribute('title', mxResources.get('compare') + ' (' + this.editorUi.actions.get('editData').shortcut + ')');
+	btn.style.width = '202px';
+	btn.style.marginBottom = '2px';
+	div.appendChild(btn);
+
+	mxUtils.br(div);
+	
+	btn = mxUtils.button(mxResources.get('updateJson'), mxUtils.bind(this, function(evt)
+	{
+		this.editorUi.actions.get('clearDefaultStyle').funct();
+	}));
+	
+
+	btn.setAttribute('title', mxResources.get('updateJson') + ' (' + this.editorUi.actions.get('clearDefaultStyle').shortcut + ')');
+	btn.style.width = '202px';
+	div.appendChild(btn);
+	console.log( this.editorUi.actions.get('clearDefaultStyle').shortcut);
+
+	mxUtils.br(div);
+	var btn = mxUtils.button(mxResources.get('reloadJson'), mxUtils.bind(this, function(evt)
+	{
+		this.editorUi.actions.get('editData').funct();
+	}));
 	btn.setAttribute('title', mxResources.get('clearDefaultStyle') + ' (' + this.editorUi.actions.get('clearDefaultStyle').shortcut + ')');
 	btn.style.width = '202px';
 	div.appendChild(btn);

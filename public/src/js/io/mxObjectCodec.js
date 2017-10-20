@@ -750,6 +750,7 @@ mxObjectCodec.prototype.afterEncode = function(enc, obj, node)
  */
 mxObjectCodec.prototype.decode = function(dec, node, into)
 {
+	//console.log(node);
 	var id = node.getAttribute('id');
 	var obj = dec.objects[id];
 	
@@ -765,7 +766,10 @@ mxObjectCodec.prototype.decode = function(dec, node, into)
 	
 	node = this.beforeDecode(dec, node, obj);
 	this.decodeNode(dec, node, obj);
-	
+	//console.log(obj);
+	if(obj.id){//son 44
+		//console.log('id : '+obj.id);
+	}
     return this.afterDecode(dec, node, obj);
 };	
 

@@ -316,3 +316,6 @@ writingDirection=Writing Direction
 zoom=Zoom
 zoomIn=Zoom In
 zoomOut=Zoom Out
+compare=Compare with server
+updateJson=Update JSON Models
+reloadJson=Reload JSON Models

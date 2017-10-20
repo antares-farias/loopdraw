@@ -442,7 +442,6 @@ Editor.prototype.setGraphXml = function(node)
 	if (node != null)
 	{
 		var dec = new mxCodec(node.ownerDocument);
-	
 		if (node.nodeName == 'mxGraphModel')
 		{
 			this.graph.model.beginUpdate();
