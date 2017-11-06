@@ -656,7 +656,12 @@ mxGraphView.prototype.getBoundingBox = function(state, recurse)
 			
 			for (var i = 0; i < childCount; i++)
 			{
-				var bounds = this.getBoundingBox(this.getState(model.getChildAt(state.cell, i)));
+				if(state.cell.id!=0 || (!state.cell.parent || state.cell.parent.id != 0)){
+					var bounds = this.getBoundingBox(this.getState(model.getChildAt(state.cell, i)));
+				}
+				else{
+					console.log("is circular3", state.cell.id, state.cell.parent.id, state.cell.value);
+				}
 				
 				if (bounds != null)
 				{
@@ -910,8 +915,12 @@ mxGraphView.prototype.validateCell = function(cell, visible)
 			
 			for (var i = 0; i < childCount; i++)
 			{
-				this.validateCell(model.getChildAt(cell, i), visible &&
-					(!this.isCellCollapsed(cell) || cell == this.currentRoot));
+				if(cell.id!=0 || (!cell.parent || cell.parent.id != 0)){
+					this.validateCell(model.getChildAt(cell, i), visible &&
+						(!this.isCellCollapsed(cell) || cell == this.currentRoot));
+				}else{
+					console.log("is circular", cell.id, cell.parent.id, cell.value);
+				}
 			}
 		}
 	}
@@ -984,7 +993,11 @@ mxGraphView.prototype.validateCellState = function(cell, recurse)
 				
 				for (var i = 0; i < childCount; i++)
 				{
-					this.validateCellState(model.getChildAt(cell, i));
+					if(cell.id!=0 || (!cell.parent || cell.parent.id != 0)){
+						this.validateCellState(model.getChildAt(cell, i));
+					}else{
+						console.log("is circular2", cell.id, cell.parent.id, cell.value);
+					}
 				}
 			}
 		}

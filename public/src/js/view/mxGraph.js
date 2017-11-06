@@ -4783,6 +4783,7 @@ mxGraph.prototype.removeCells = function(cells, includeEdges)
 	{
 		// FIXME: Remove duplicate cells in result or do not add if
 		// in cells or descendant of cells
+		console.log(cells);
 		cells = this.getDeletableCells(this.addAllEdges(cells));
 	}
 
@@ -10937,7 +10938,13 @@ mxGraph.prototype.getCellAt = function(x, y, parent, vertices, edges, ignoreFn)
 		for (var i = childCount - 1; i >= 0; i--)
 		{
 			var cell = this.model.getChildAt(parent, i);
-			var result = this.getCellAt(x, y, cell, vertices, edges, ignoreFn);
+			if(parent.id != i){
+				var result = this.getCellAt(x, y, cell, vertices, edges, ignoreFn);
+			}
+			else{
+				//console.log(parent, i);
+				var result = null;
+			}
 			
 			if (result != null)
 			{

@@ -94,6 +94,9 @@ Actions.prototype.init = function()
 			mxClipboard.paste(graph);
 		}
 	}, false, 'sprite-paste', Editor.ctrlKey + '+V');
+	this.addAction('updateToJson', function() { ui.updateToJson(false); }, null, null, Editor.ctrlKey + '+Shift+U').isEnabled = isGraphEnabled;
+	this.addAction('compareToJson', function() { ui.compareToJson(false); }, null, null, Editor.ctrlKey + '+Shift+C').isEnabled = isGraphEnabled;
+	this.addAction('loadFromJson', function() { ui.loadFromJson(false); }, null, null, Editor.ctrlKey + '+Shift+L').isEnabled = isGraphEnabled;
 	this.addAction('pasteHere', function(evt)
 	{
 		if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent()))

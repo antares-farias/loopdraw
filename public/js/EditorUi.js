@@ -3328,6 +3328,40 @@ EditorUi.prototype.saveFileServer = function(forceDialog)
 		dlg.init();*/
 	}
 };
+EditorUi.prototype.updateToJson = function(forceDialog){
+	console.log('updateToJson');
+	/*var cells = [];
+	var temp_cells = this.editor.graph.model.cells[0].children;
+	for(i=1;i<temp_cells.length;i++){
+		cells.push(temp_cells[i]);
+	}
+	this.editor.graph.removeCells(cells, true);
+	var parent =  this.editor.graph.getDefaultParent();
+	var graph = this.editor.graph;
+	graph.removeCells(graph.getChildVertices(graph.getDefaultParent()),true, true);
+	test.models.loadXML = false;
+	test.models.getModels(this);*/
+	test.models.updateModels();
+};
+EditorUi.prototype.compareToJson = function(forceDialog){
+	console.log('compareToJson');
+	test.debug("asdf", "bbb");
+};
+EditorUi.prototype.loadFromJson = function(forceDialog){
+	console.log('loadFromJson');
+	var cells = [];
+	var temp_cells = this.editor.graph.model.cells[0].children;
+	for(i=1;i<temp_cells.length;i++){
+		cells.push(temp_cells[i]);
+	}
+	this.editor.graph.removeCells(cells, true);
+	var parent =  this.editor.graph.getDefaultParent();
+	var graph = this.editor.graph;
+	//graph.removeCells(graph.getChildVertices(graph.getDefaultParent()),true, true);
+	test.models.loadXML = false;
+	test.models.getModels(this);
+
+};
 EditorUi.prototype.upload = function (text, name, type){
 	//var a = document.getElementById("a");
 	var file = new Blob([text], {type: type});

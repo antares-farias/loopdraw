@@ -4882,13 +4882,13 @@ DiagramFormatPanel.prototype.addStyleOps = function(div)
  * */
 DiagramFormatPanel.prototype.addLoopdrawOps= function(div)
 {
-	console.log('addLoopdrawOps')
+	//console.log('addLoopdrawOps')
 	var btn = mxUtils.button(mxResources.get('compare'), mxUtils.bind(this, function(evt)
 	{
-		this.editorUi.actions.get('editData').funct();
+		this.editorUi.actions.get('compareToJson').funct();
 	}));
 
-	btn.setAttribute('title', mxResources.get('compare') + ' (' + this.editorUi.actions.get('editData').shortcut + ')');
+	btn.setAttribute('title', mxResources.get('compare') + ' (' + this.editorUi.actions.get('compareToJson').shortcut + ')');
 	btn.style.width = '202px';
 	btn.style.marginBottom = '2px';
 	div.appendChild(btn);
@@ -4897,21 +4897,21 @@ DiagramFormatPanel.prototype.addLoopdrawOps= function(div)
 	
 	btn = mxUtils.button(mxResources.get('updateJson'), mxUtils.bind(this, function(evt)
 	{
-		this.editorUi.actions.get('clearDefaultStyle').funct();
+		this.editorUi.actions.get('updateToJson').funct();
 	}));
 	
 
-	btn.setAttribute('title', mxResources.get('updateJson') + ' (' + this.editorUi.actions.get('clearDefaultStyle').shortcut + ')');
+	btn.setAttribute('title', mxResources.get('updateJson') + ' (' + this.editorUi.actions.get('updateToJson').shortcut + ')');
 	btn.style.width = '202px';
 	div.appendChild(btn);
-	console.log( this.editorUi.actions.get('clearDefaultStyle').shortcut);
+	//console.log( this.editorUi.actions.get('clearDefaultStyle').shortcut);
 
 	mxUtils.br(div);
 	var btn = mxUtils.button(mxResources.get('reloadJson'), mxUtils.bind(this, function(evt)
 	{
-		this.editorUi.actions.get('editData').funct();
+		this.editorUi.actions.get('loadFromJson').funct();
 	}));
-	btn.setAttribute('title', mxResources.get('clearDefaultStyle') + ' (' + this.editorUi.actions.get('clearDefaultStyle').shortcut + ')');
+	btn.setAttribute('title', mxResources.get('clearDefaultStyle') + ' (' + this.editorUi.actions.get('loadFromJson').shortcut + ')');
 	btn.style.width = '202px';
 	div.appendChild(btn);
 

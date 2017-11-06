@@ -25,6 +25,7 @@ function diagram(loopbackApplication, options) {
   //loopbackApplication.use('/diagram', express.static(expose_dir));
 
   router.post('/upload',upload());
+  
 
   loopbackApplication.set('loopdraw', options);
   loopbackApplication.use('/', express.static(publicDir));
@@ -33,13 +34,23 @@ function diagram(loopbackApplication, options) {
             var uploadDir = "../"+config._meta.sources[2]+'/diagram';
             var expose_dir = __dirname+"/"+uploadDir;
             console.log(expose_dir);
-            //loopbackApplication.use('/static', express.static(__dirname + "/"+ uploadDir));
-            loopbackApplication.use('/static', express.static(expose_dir));
-            //loopbackApplication.use('/static', express.static(uploadDir));
+           // if (fs.existsSync(expose_dir)) {
+                // Do something
+                //loopbackApplication.use('/static', express.static(__dirname + "/"+ uploadDir));
+                loopbackApplication.use('/static', express.static(expose_dir));
+                //loopbackApplication.use('/static', express.static(uploadDir));
+                loopbackApplication.get('/static/*',function(req, res) {
+                    res.send('false');
+                });
+            /*}
+            else{
+            }*/
 }); 
+/*loopbackApplication.use(function(req, res) {
+        res.status(404).render('false');
+});*/
 
   loopbackApplication.use(router);
-
 
 }
 function upload(res){
