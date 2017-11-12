@@ -69,13 +69,13 @@ Model.prototype.getModels = function(editor_ui){
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     //document.getElementById('placeholder').innerHTML = xhr.responseText;
-                    console.log(mxUtils);
+                    /*console.log(mxUtils);
                     console.log(graph);
                     console.log(editorUiInit);
-                    console.log(editor_ui);
+                    console.log(editor_ui);*/
 					model.editor = editor_ui;
                     var new_xml = xhr.responseText;
-                    console.log(model.loadXML);
+                    //console.log(model.loadXML);
                     model.master.url = json_loop.splice();
                     model.master.json = json_loop;
                     if(new_xml=="false" || !model.loadXML){ //No saved diagram
@@ -148,16 +148,26 @@ Model.prototype.fillVertex = function(){
 	this.master.vertex = {};
 	var model = this;
 	//create dictionary to vertex
+	console.log(graph.model.cells[0]);
 	graph.model.cells[0].children.forEach(function (item, idx){
 		//console.log(item);
 		//json_file[1][item.id]
 		//console.log(json_file[1]);
 		model.master.vertex[json_file[1][item.id]] = item;
+		if(item.edge == "1" && item.value != ""){
+			if(!model.master.relation){model.master.relation = {};}
+			model.master.relation[item.target.id] = item;
+			model.master.relation[item.source.id] = item;
+		}
+		else{
+			//console.log(item);
+		}
 	});
 	console.log(this.master.vertex);
+	console.log(this.master.relation);
 	//graph.model.setValue(cell, "test ruls");
 }
-Model.prototype.updateModels = function(stop){
+Model.prototype.updateModels = function(res_result){
 	/*
 		Casos:
 		cambio el nombre de una llave
@@ -167,44 +177,61 @@ Model.prototype.updateModels = function(stop){
 		if in json added
 		if value diferent updated
 	*/
-    console.log(this.master.json);
-    console.log(this.master.xml);
-	//TODO : neeed to get both new
-	this.fillVertex(); 
-
-    var result1 = this.parser.comparator(this.parser.parseJson2Keys(this.master.json), this.parser.parseJson2Keys(this.master.xml));
-	var result2 = this.parser.comparator(this.parser.parseJson2Keys(this.master.xml), this.parser.parseJson2Keys(this.master.json));
-
-    console.log(result1);
-	console.log(result2);
 	/*result2.forEach(function(item, idx){
 		var path = item.trace.split(":");
 		console.log(path);
 		console.log(this.master.vertex[path[1]]);
 	});*/
+	var result = this.actionCompare();
+	var result1 = result['check_json'];
+	var result2 = result['check_xml'];
+	//var res_result = {};
 	var model = this;
 	var count = 0;
+	var run_again = false;
 	for (var key in result2) {
 		count++;
 		if (result2.hasOwnProperty(key)) {
 			//console.log(key + " -> " + p[key]);
+			//iterate for Trace Key
 			result2[key].forEach(function(item, idx){
 				var path = item.trace.split(":");
 				//console.log(path);
 				//vertrex
 				//console.log(model.master.vertex[path[1]]);
-				console.log(path[2]);
-				console.log(model.master.vertex[path[1]].children);
+				//console.log(path[2]);
+				//console.log(model.master.vertex[path[1]].children);
+				//No value
 				if(item.compared == undefined){
 					//delete not existing in 
 					//console.log(result1[item.trace]);
 					model.master.vertex[path[1]].children.forEach(function(item1, idx1){
-						if(result1[item.trace] && result1[item.trace].compared == undefined){
-							//TODO: check original AKA value
-							//TODO: this zero maybe wrong
-							graph.model.setValue(item1, graph.model.getValue(item1).replace(item.key, result1[item.trace][0].key));
+						var found = false;
+						if(result1[item.trace]){
+							result1[item.trace].forEach(function(item_json, idx2){
+								if(item_json.compared == undefined && !found){
+									//TODO: check original AKA value
+									//console.log(graph.model.getValue(item1),item.key, item_json.key);
+									graph.model.setValue(item1, graph.model.getValue(item1).replace(item.key, item_json.key));
+									if(!res_result[item.trace]){res_result[item.trace] = {}}
+									if(!res_result[item.trace][item.key]){res_result[item.trace][item.key] = {}}
+									res_result[item.trace][item.key].done = true;
+									console.log(item);
+									//console.log("result1", result1)
+									console.log('Done case 1:update key'+item.key);
+									run_again = true;
+									//result1[item.trace].splice();
+									found = true;
+								}
+								else{
+									//console.log(item);
+								}
+							});
+							if(!found){
+								//console.log("not found", item);
+							}
 						}
-						else{
+						if(!found){
 								//console.log(item1.value);
 								if(item1.value && item1.value.indexOf(item.key)!= -1){
 									/*console.log("found",item1);
@@ -212,6 +239,10 @@ Model.prototype.updateModels = function(stop){
 									console.log(graph);*/
 									//item1.destroy();
 									graph.removeCells([item1], true);
+									if(!res_result[item.trace]){res_result[item.trace] = {}}
+									if(!res_result[item.trace][item.key]){res_result[item.trace][item.key] = {}}
+									res_result[item.trace][item.keyidx].done = true;
+									console.log('done case 2 : Delete');
 								}
 						}
 					});
@@ -219,34 +250,82 @@ Model.prototype.updateModels = function(stop){
 				else if(item.msj = "No Match"){
 					//update 
 					//search if change model relation
-					if(item.key.indexOf("model") == -1){
+					if(model.master.vertex[path[1]].value.indexOf(item.original)!=-1){
+						graph.model.setValue(model.master.vertex[path[1]], graph.model.getValue(model.master.vertex[path[1]]).replace(item.original, item.compared));
+						//console.log(item, model.master.vertex[path[1]]);
+						if(!res_result[item.trace]){res_result[item.trace] = {}}
+						if(!res_result[item.trace][item.key]){res_result[item.trace][item.key] = {}}
+						res_result[item.trace][item.key].done = true;
+					}
+					else{
+						var found = -2;
 						model.master.vertex[path[1]].children.forEach(function(item1, idx1){
-							console.log(item1.value, item.original);
+							//console.log(item1.value, item.original);
+							//Find if exist to update|
 							if(item1.value && item1.value.indexOf(item.original)!= -1){
-								console.log("found",item1);
-								console.log(model.graph);
-								console.log(graph);
+								//console.log("found",item1);
+								//console.log(model.graph);
+								//console.log(graph);
 								//item1.destroy();
 								//graph.removeCells([item1], true);
 								graph.model.setValue(item1, graph.model.getValue(item1).replace(item.original, item.compared));
+								if(!res_result[item.trace]){res_result[item.trace] = {}}
+								if(!res_result[item.trace][item.key]){res_result[item.trace][item.key] = {}}
+								res_result[item.trace][item.key].done = true;
+								//console.log(item)
+								found = item1;
+								console.log('done case 3 : Update item',item.key);
 								//TODO recursive function to check children
 							}
 						});
-					}
-					else{
-
+						if(item.key.indexOf("model") == -1){
+							console.log('update relations');
+							/*console.log(found);
+							console.log(model.master.relation);*/
+							console.log(model.master.relation[found.id]);
+							graph.removeCells([model.master.relation[found.id]], true);
+							//TODO: update relations
+							model.master.relation[found.id]
+						}
+						else{
+							//console.log(item);
+						}
 					}
 				}
 			});
 		}
 	}
-	console.log('count'+count,!stop);
-	if(count>1 && !stop){
+	
+	//console.log(result);
+	console.log(res_result);
+	console.log(result1);
+	//console.log('count'+count,!stop);
+	if(run_again){
+		this.updateModels(res_result);
+	}
+	else{
+		for (var key in result1){
+			result1[key].forEach(function(item, idx){
+				if(res_result[key] && res_result[key][item.key]){
+					console.log("found"+key+" "+item.key);
+				}
+				else{
+					//if(result1[key][idx].)
+					console.log("not found");
+					console.log(result1[key][idx]);
+					console.log(model.master.json_key);
+					//console.log(model.master.json_key[result1[key][idx]['original']].relations);
+					//console.log(model.master);
+				}
+			});
+		}
+	}
+	/*if(count>1 && !stop){
 		this.updateModels(false);
 	}
 	else{
 		console.log(result1, result2);
-	}
+	}*/
 }
 
 /*
@@ -254,7 +333,9 @@ Cases of comparison
 [DONE]- Field rename
 [DONE] - relatin renamed
 [DONE] - foreng key renamed
+[DONE] - BASE  renamed
 [] - Relation change table;
+Adding propertie:
 RElation cahnge type
 Table REname
 Table Delted
@@ -264,7 +345,18 @@ Table Created with relations
 
  */
 Model.prototype.actionCompare = function(item_check,item_edit, action){
+	console.log(this.master.json);
+    console.log(this.master.xml);
+	//TODO : neeed to get both new
+	this.fillVertex(); 
+	this.master.json_key = this.parser.parseJson2Keys(this.master.json);
+	this.master.xml_key = this.parser.parseJson2Keys(this.master.xml);
+    var result1 = this.parser.comparator(this.master.json_key, this.master.xml_key);
+	var result2 = this.parser.comparator(this.master.xml_key, this.master.json_key);
 
+    console.log(result1);
+	console.log(result2);
+	return ({check_json:result1, check_xml:result2});
 }
 var arr_models = [];
 Model.prototype.createRelation = function(){
@@ -277,10 +369,10 @@ Model.prototype.createRelation = function(){
 			for(var relation in models[model]['rel']){
 				var this_rel =models[model]['rel'][relation]['vertex'];
 				if(throughs[model]){
-					console.log(models[model]['rel']);
+					/*console.log(models[model]['rel']);
 					console.log(throughs[model]);
 					console.log(model);
-					console.log(models);
+					console.log(models);*/
 					var e2 = graph.insertRelationEdge(parent, null, '', 
 						models[throughs[model][1]]['rel'][throughs[model][0]]['vertex'],
 						models[model]['rel'][throughs[model][1]]['vertex'],
@@ -338,6 +430,10 @@ Model.prototype.createRelation = function(){
 			//models[model].done = true;
 		//}
 	}
+}
+Model.prototype.getRelations = function(){
+	console.log('test');
+	
 }
         var models = {};
 		var throughs = {};

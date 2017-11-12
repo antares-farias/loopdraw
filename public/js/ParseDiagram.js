@@ -85,7 +85,7 @@ ParseDiagram.prototype.converXML2Model = function(xml){
             var prop = $(item['@value']).html();
             prop = prop.replace("<b>","");
             prop = prop.replace("</b>","");
-            console.log(prop);
+            //console.log(prop);
             //Foreing key
             if(prop.indexOf("@")>=0){
                 prop = prop.split("@");
@@ -93,7 +93,7 @@ ParseDiagram.prototype.converXML2Model = function(xml){
                 if(prop[0].indexOf("(FK)")>0){
                     foreignKey = prop[0].replace("(FK)","");
                 }
-                console.log(foreignKey);
+                //console.log(foreignKey);
                 rel_file[item['@id']] = {
                     parent_id : item['@parent'],
                     model : model_file[item['@parent']].name,
@@ -132,12 +132,12 @@ ParseDiagram.prototype.converXML2Model = function(xml){
         //Relations 
         else if(item['@edge'] == 1 && item['@value'] && item['@value'] != ""){
             if(item['@value'] == "hasManyThrough"){
-                console.log(item);
+                //console.log(item);
                 rel_file[item['@value']] = {};
                 rel_file[item['@value']][item['@source']] = rel_file[item['@target']];
                 rel_file[item['@value']][item['@target']] = rel_file[item['@source']];
-                console.log(rel_file[item['@source']]);
-                console.log(rel_file[item['@target']]);
+                //console.log(rel_file[item['@source']]);
+                //console.log(rel_file[item['@target']]);
                 //console.log(item['@source']);
             }
             if(rel_file[item['@target']]){
@@ -153,7 +153,7 @@ ParseDiagram.prototype.converXML2Model = function(xml){
                     foreignKey : (rel_file[item['@source']].foreignKey !== rel_file[item['@source']].relation) ?rel_file[item['@source']].foreignKey :""
                 }
                 if(rel_file['hasManyThrough']  && rel_file['hasManyThrough'][item['@source']] && item['@value'] == "hasMany"){
-                    console.log('exists', rel_file['hasManyThrough'][item['@source']]);
+                    //console.log('exists', rel_file['hasManyThrough'][item['@source']]);
                     new_rel.model = rel_file['hasManyThrough'][item['@source']].model;
                     new_rel.type = item['@value'];
                     new_rel.through =  rel_file[item['@target']].model;
@@ -173,9 +173,9 @@ ParseDiagram.prototype.converXML2Model = function(xml){
             }
         }
     });
-    console.log(rel_file);
+    //console.log(rel_file);
     //console.log(model_file[17].relations);
-    console.log(model_file);
+    //console.log(model_file);
     var arr_json = [];
     var name_id = [];
     arr_idx.forEach(function (item, idx){
@@ -184,7 +184,7 @@ ParseDiagram.prototype.converXML2Model = function(xml){
     });
     //console.log(name_id);
     //console.log(arr_json);
-    console.log(arr_name);
+    //console.log(arr_name);
     return [arr_json,arr_name];
 }
 ParseDiagram.prototype.parseJson2Keys = function (json){
@@ -201,7 +201,7 @@ ParseDiagram.prototype.parseJson2Keys = function (json){
             }
         }
     });
-    console.log(json_resp);
+    //console.log(json_resp);
     return json_resp;
 }
 ParseDiagram.prototype.comparator = function (json_base, json_new){
@@ -256,8 +256,8 @@ ParseDiagram.prototype.objComp = function (base, jnew, erros, trace){
                 if(base[key] != jnew[key] &&
                     (key!="required" || base[key]!=false || jnew[key])
                 ){
-                    console.log(trace);
-                    console.log('not match '+key+"__"+base[key]+" "+jnew[key]+"__");
+                    //console.log(trace);
+                    //console.log('not match '+key+"__"+base[key]+" "+jnew[key]+"__");
                     if(!erros[trace]){
                         erros[trace] = [];
                     }

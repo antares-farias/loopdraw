@@ -3341,7 +3341,7 @@ EditorUi.prototype.updateToJson = function(forceDialog){
 	graph.removeCells(graph.getChildVertices(graph.getDefaultParent()),true, true);
 	test.models.loadXML = false;
 	test.models.getModels(this);*/
-	test.models.updateModels();
+	test.models.updateModels({});
 };
 EditorUi.prototype.compareToJson = function(forceDialog){
 	console.log('compareToJson');

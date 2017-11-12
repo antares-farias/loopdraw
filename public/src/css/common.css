@@ -158,3 +158,36 @@ td.mxPopupMenuIcon {
 	opacity: 0.2 !important;
 	cursor:default !important;
 }
+.lightbox{
+	position:absolute;
+	bottom:0px;
+	/*margin:0 auto 0 auto;
+	width: 499px;*/
+	background-color:#F5F5F5;
+	width: 100%;
+	/*z-index: 1;*/
+	max-height:200px;
+
+}
+.lightbox .content{
+	overflow: auto;
+	max-height: calc(200px - 35px);
+}
+.lightbox h2 {
+	background-color: #EEEEEE;
+	margin: 0px;
+	padding: 5px 0px;
+}
+.geSidebarContainer{
+	/*position: relative;*/
+}
+.geSidebarContainer{
+	/*height: 100%;*/
+}
+.geSidebarContainer > div:not(.lightbox){
+	height: (100% - 200px);
+	overflow: auto;
+}
+body{
+	width:100%;
+}

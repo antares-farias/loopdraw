@@ -52,6 +52,7 @@ LoopDraw.prototype.init = function(){
                         morph.addListener(mxEvent.DONE, function()
                         {
                             graph.getModel().endUpdate();
+                            
                         });
                         morph.startAnimation();
                     }
@@ -86,10 +87,21 @@ LoopDraw.prototype.init = function(){
         
         // Main
         new EditorUi(new Editor(urlParams['chrome'] == '0', themes));
+        $('.geSidebarContainer').append('<div class="lightbox">'+
+            '<h2>Messages</h2>'+
+            '<div class="content"></div>'+
+        '</div>');
+        console.log('done');
+        loopdraw.pushMesage('Start');
+        /*var test = setInterval(function(){
+            loopdraw.pushMesage('done');
+        }, 1000);*/
+        //$('.geSidebarContainer').append('asdf');
     }, function()
     {
         document.body.innerHTML = '<center style="margin-top:10%;">Error loading resource files. Please check browser console.</center>';
     });
+   
 }
 LoopDraw.prototype.debug = function(msj, source){
     if(
@@ -99,4 +111,8 @@ LoopDraw.prototype.debug = function(msj, source){
         ){
         console.log(source+":",msj);
     }
+}
+LoopDraw.prototype.pushMesage = function(msg){
+    $('.lightbox .content').append("<div>"+msg+"</div>");
+    $('.lightbox .content').scrollTop($('.lightbox .content')[0].scrollHeight);
 }
