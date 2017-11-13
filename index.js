@@ -158,6 +158,15 @@ function models_data(res){
                         temp_item['file'] = filesPath[idx];
                         resul.push(temp_item);
                     })
+                    fs.stat(filesPath2[0], function(err, data){
+                        console.log(data);
+                    });
+                     fs.stat(filesPath2[1], function(err, data){
+                        console.log(data);
+                    });
+                     fs.stat(filesPath2[2], function(err, data){
+                        console.log(data);
+                    });
                     //resul;
                     res.send(resul); //sending all data to client
                 });
