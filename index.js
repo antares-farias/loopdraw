@@ -114,6 +114,9 @@ function testdraw(res){
         res.sendFile(path.join(__dirname + '/public/index.html'));
     };
 }
+function sum(a,b){
+    return a+b;
+}
 function open(res){
   return  function(req, res) {
         res.sendFile(path.join(__dirname + '/public/open.html'));
@@ -155,8 +158,12 @@ function models_data(res){
                         console.log(filesPath[idx]);
                         //resul[filesPath[idx]] = 
                         var temp_item = JSON.parse(item);
+                        temp_item.ld_id = 42;
+                        //Serialize as JSON and Write it to a file
+                        fs.writeFileSync("server/"+config._meta.sources[2]+'/'+filesPath[idx], JSON.stringify(temp_item, null, 2));
                         temp_item['file'] = filesPath[idx];
                         resul.push(temp_item);
+                        //change the value in the in-memory object
                     })
                     fs.stat(filesPath2[0], function(err, data){
                         console.log(data);

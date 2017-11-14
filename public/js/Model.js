@@ -177,6 +177,10 @@ Model.prototype.updateModels = function(res_result){
 		if in json added
 		if value diferent updated
 	*/
+	graph.model.cells[0].children.forEach(function (item, idx){
+		console.log(item);
+	});
+	return 0;
 	/*result2.forEach(function(item, idx){
 		var path = item.trace.split(":");
 		console.log(path);
@@ -314,6 +318,13 @@ Model.prototype.updateModels = function(res_result){
 					console.log("not found");
 					console.log(result1[key][idx]);
 					console.log(model.master.json_key);
+					if(result1[key][idx].compared == undefined){
+						//Add field
+						if(item.trace.indexOf("properties")){
+							//TODO: add proerties
+
+						}
+					}
 					//console.log(model.master.json_key[result1[key][idx]['original']].relations);
 					//console.log(model.master);
 				}

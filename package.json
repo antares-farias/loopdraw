@@ -1,0 +1,33 @@
+{
+  "name": "loopdraw",
+  "version": "0.3.0",
+  "description": "Addon to Loopback 2.x and 3.x to make auto-diagram for the models",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "engines": {
+    "node": ">=4.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antares-farias/loopdraw.git"
+  },
+  "keywords": [
+    "loopback",
+    "strongloop",
+    "mxgraph",
+    "diagram",
+    "devtools"
+  ],
+  "author": "Antares Farías",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/antares-farias/loopdraw/issues"
+  },
+  "homepage": "https://github.com/antares-farias/loopdraw#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1"
+  }
+}
