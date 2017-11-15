@@ -83,7 +83,9 @@ Model.prototype.getModels = function(editor_ui){
                         //temp_json= json_loop;
                         console.log(json_loop);
                         json_loop.forEach(function(json, idx){
-                            model.createModel(0,0,json);
+							if(json.name){
+                            	model.createModel(0,0,json);
+							}
                         });
                         model.createRelation();
                         model.applyLayout();
@@ -92,9 +94,10 @@ Model.prototype.getModels = function(editor_ui){
                     else{
                         //Fix issue on load XML
                         //new_xml = new_xml.replace('<mxCell id="0" parent="0"/>', "");
-                        new_xml = new_xml.replace('<mxCell id="0" parent="0"/>', '<mxCell id="100" parent="0"/>');
-                        new_xml = new_xml.replace('<mxCell id="1000" parent="0"/>', '<mxCell id="-1" parent="0"/>');
+                        new_xml = new_xml.replace('<mxCell id="0" parent="0"/>', '<mxCell id="-1" parent="0"/>');
+                        //new_xml = new_xml.replace('<mxCell id="1000" parent="0"/>', '<mxCell id="-1" parent="0"/>');
                         new_xml = new_xml.replace(/marginTop=6;/g, "marginTop=36;");
+                        new_xml = new_xml.replace(/parent="-1"/g, "parent=\"0\"");
                         /*
                         Update Diagram with XML
                         */
@@ -136,6 +139,7 @@ Model.prototype.fillVertex = function(){
 	//var new_xml =  mxUtils.getXml();
 	var json_file = this.parser.converXML2Model(""+new_xml);
 	this.master.xml = json_file[0];
+	console.log(this.master.xml);
 	//comparator(parseJson2Keys(json_file), parseJson2Keys(json_loop));
 	
 	//var xml1 =editor_ui.editor.getGraphXml();
@@ -153,7 +157,8 @@ Model.prototype.fillVertex = function(){
 		//console.log(item);
 		//json_file[1][item.id]
 		//console.log(json_file[1]);
-		model.master.vertex[json_file[1][item.id]] = item;
+		//model.master.vertex[json_file[1][item.id]] = item;
+		model.master.vertex[item.id] = item;
 		if(item.edge == "1" && item.value != ""){
 			if(!model.master.relation){model.master.relation = {};}
 			model.master.relation[item.target.id] = item;
@@ -177,20 +182,62 @@ Model.prototype.updateModels = function(res_result){
 		if in json added
 		if value diferent updated
 	*/
+	var model = this;
+	
+	console.log(graph.model);
+	console.log(model);
+	var result = this.actionCompare();
+	var result1 = result['check_json'];
+	var result2 = result['check_xml'];
+	console.log(result);
+	var update_arr = {};
+	//Analisys for updates //TODO: this should be in the comparator 
+	for (var key in result1) {
+		count++;
+		if (result1.hasOwnProperty(key)) {
+			//console.log(key + " -> " + p[key]);
+			//iterate for Trace Key
+			result1[key].forEach(function(item, idx){
+				var path = item.trace.split(":");
+				console.log(path[1]);
+				update_arr[path[1]] = true;
+				//console.log(model.master.vertex[item.]);
+				
+			});
+		}
+	}
 	graph.model.cells[0].children.forEach(function (item, idx){
-		console.log(item);
+		//console.log(item.style);
+		if(item.id.indexOf("-")>0 && update_arr[item.id]){
+			//console.log('update', item.id);
+			var json = model.master.json_key[item.id];
+			//console.log('json', json);
+			graph.removeCells(item.children);
+			graph.model.setValue(item, graph.model.getValue(item).replace(item.value, model.setModelName(json)));
+			model.fillModel(item, json);
+			update_arr[item.id] = false;
+			//model.master.vertex[item.id];
+			//if
+		}
+		//console.log(graph.view.getState(item).shape);
+		//console.log(graph.view);
 	});
+	console.log(update_arr);
+	console.log(result1[""]);
+	if(result[""]){
+		result1[""].forEach(function(item, idx){
+			console.log(model.master.json_key[item.key]);
+			model.createModel(10,10, model.master.json_key[item.key]);
+		});
+	}
+	this.createRelation();
 	return 0;
 	/*result2.forEach(function(item, idx){
 		var path = item.trace.split(":");
 		console.log(path);
 		console.log(this.master.vertex[path[1]]);
 	});*/
-	var result = this.actionCompare();
-	var result1 = result['check_json'];
-	var result2 = result['check_xml'];
 	//var res_result = {};
-	var model = this;
 	var count = 0;
 	var run_again = false;
 	for (var key in result2) {
@@ -209,47 +256,50 @@ Model.prototype.updateModels = function(res_result){
 				if(item.compared == undefined){
 					//delete not existing in 
 					//console.log(result1[item.trace]);
-					model.master.vertex[path[1]].children.forEach(function(item1, idx1){
-						var found = false;
-						if(result1[item.trace]){
-							result1[item.trace].forEach(function(item_json, idx2){
-								if(item_json.compared == undefined && !found){
-									//TODO: check original AKA value
-									//console.log(graph.model.getValue(item1),item.key, item_json.key);
-									graph.model.setValue(item1, graph.model.getValue(item1).replace(item.key, item_json.key));
-									if(!res_result[item.trace]){res_result[item.trace] = {}}
-									if(!res_result[item.trace][item.key]){res_result[item.trace][item.key] = {}}
-									res_result[item.trace][item.key].done = true;
-									console.log(item);
-									//console.log("result1", result1)
-									console.log('Done case 1:update key'+item.key);
-									run_again = true;
-									//result1[item.trace].splice();
-									found = true;
+					console.log(model.master.vertex[path[1]]);
+					if(model.master.vertex[path[1]].children){
+						model.master.vertex[path[1]].children.forEach(function(item1, idx1){
+							var found = false;
+							if(result1[item.trace]){
+								result1[item.trace].forEach(function(item_json, idx2){
+									if(item_json.compared == undefined && !found){
+										//TODO: check original AKA value
+										//console.log(graph.model.getValue(item1),item.key, item_json.key);
+										graph.model.setValue(item1, graph.model.getValue(item1).replace(item.key, item_json.key));
+										if(!res_result[item.trace]){res_result[item.trace] = {}}
+										if(!res_result[item.trace][item.key]){res_result[item.trace][item.key] = {}}
+										res_result[item.trace][item.key].done = true;
+										console.log(item);
+										//console.log("result1", result1)
+										console.log('Done case 1:update key'+item.key);
+										run_again = true;
+										//result1[item.trace].splice();
+										found = true;
+									}
+									else{
+										//console.log(item);
+									}
+								});
+								if(!found){
+									//console.log("not found", item);
 								}
-								else{
-									//console.log(item);
-								}
-							});
-							if(!found){
-								//console.log("not found", item);
 							}
-						}
-						if(!found){
-								//console.log(item1.value);
-								if(item1.value && item1.value.indexOf(item.key)!= -1){
-									/*console.log("found",item1);
-									console.log(model.graph);
-									console.log(graph);*/
-									//item1.destroy();
-									graph.removeCells([item1], true);
-									if(!res_result[item.trace]){res_result[item.trace] = {}}
-									if(!res_result[item.trace][item.key]){res_result[item.trace][item.key] = {}}
-									res_result[item.trace][item.keyidx].done = true;
-									console.log('done case 2 : Delete');
-								}
-						}
-					});
+							if(!found){
+									//console.log(item1.value);
+									if(item1.value && item1.value.indexOf(item.key)!= -1){
+										/*console.log("found",item1);
+										console.log(model.graph);
+										console.log(graph);*/
+										//item1.destroy();
+										graph.removeCells([item1], true);
+										if(!res_result[item.trace]){res_result[item.trace] = {}}
+										if(!res_result[item.trace][item.key]){res_result[item.trace][item.key] = {}}
+										res_result[item.trace][item.keyidx].done = true;
+										console.log('done case 2 : Delete');
+									}
+							}
+						});
+					}
 				}
 				else if(item.msj = "No Match"){
 					//update 
@@ -357,9 +407,9 @@ Table Created with relations
  */
 Model.prototype.actionCompare = function(item_check,item_edit, action){
 	console.log(this.master.json);
-    console.log(this.master.xml);
 	//TODO : neeed to get both new
 	this.fillVertex(); 
+    console.log(this.master.xml);
 	this.master.json_key = this.parser.parseJson2Keys(this.master.json);
 	this.master.xml_key = this.parser.parseJson2Keys(this.master.xml);
     var result1 = this.parser.comparator(this.master.json_key, this.master.xml_key);
@@ -448,13 +498,61 @@ Model.prototype.getRelations = function(){
 }
         var models = {};
 		var throughs = {};
+Model.prototype.setModelName = function(json){
+	return "<div><b>"+json.name+"</b></div><div><i>&lt;"+json.base+"&gt;</i></div>";
+}
+Model.prototype.fillModel = function(v1,json){
+	if(!models[json.name]) {models[json.name]={};}
+	models[json.name]['vertex'] = v1;
+	models[json.name]['json'] = json;
+	models[json.name]['rel'] = {};
+	///create properties
+	for (var key in json.properties) {//autoSizeCell
+		if (json.properties.hasOwnProperty(key)) {
+		var required = (json.properties[key].required)?"* ":"";
+		properties = "<p>"+required+key+":<b>"+json.properties[key].type+"</b></p>";//autoSizeCell=1;autoSizeCell=1;resizeParent=1;h
+		var poper = graph.insertVertex(v1, null, properties,20, 20, 80, 30,'strokeColor=none;portConstraint=eastwest;html=1;');
+		}
+	}
+	//var v2 = graph.insertVertex(v1, null, 'v1', 20, 20, 80, 30,'strokeColor=none');
+	//var keys = graph.insertVertex(v1, null, "",0, 0, 80, 30, 'strokeColor=none;portConstraint=eastwest;rounded=1;html=1;');
+	//graph.insertVertex(v1, null, '',20, 20, 1, 1,"line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];rounded=1;portConstraint=eastwest;");
+	//var rels = graph.insertVertex(v1, null, "",0, 0, 80, 30, 'strokeColor=none;portConstraint=eastwest;rounded=1;html=1;');
+	var rels = [];
+	var extra_Relations
+	for (var key in json.relations) {
+		if (json.relations.hasOwnProperty(key)) {
+		rel = "<p>"+((json.relations[key].foreignKey)?json.relations[key].foreignKey+"(FK)":((json.relations[key].type=='belongsTo')?key+"Id":key))+"@<b>"+key+"</b></p>";
+		//autoSizeCell=1;resizeParent=1;
+		if(json.relations[key].type=='belongsTo'){
+			var poper = graph.insertVertex(v1, null, rel,20, 20, 80, 30, 'strokeColor=none;portConstraint=eastwest;rounded=1;html=1;');
+			models[json.name]['rel'][json.relations[key].model] = {
+				'json':json.relations[key],
+				'vertex': poper
+			};
+		}
+		else{
+			rels.push({key:key, rel:rel});
+		}
+		}
+	}
+	graph.insertVertex(v1, null, '',20, 20, 1, 1,"line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];rounded=1;portConstraint=eastwest;");
+	rels.forEach(function(item, idx){
+		console.log(item);
+		var poper = graph.insertVertex(v1, null, item.rel,20, 20, 80, 30, 'strokeColor=none;portConstraint=eastwest;rounded=1;html=1;');
+		models[json.name]['rel'][json.relations[item.key].model] = {
+			'json':json.relations[item.key],
+			'vertex': poper
+		};
+	});
+}
 Model.prototype.createModel = function(x, y,json){
 			var parent = graph.getDefaultParent();
 			//var v1 = graph.insertVertex(parent, null, 'v1', 20, 20, 80, 30,'strokeColor=none');//;autoSizeCell=1resizeParent=1;resizeParentMax=1;resizeLast=1;marginTop=26;
 			//Create Container and title
-			var v1 = graph.insertVertex(parent, null, "<div><b>"+json.name+"</b></div><div><i>&lt;"+json.base+"&gt;</i></div>", x, y,180, 0,"swimlane;fontStyle=0;childLayout=stackLayout;marginTop=6;horizontal=1;startSize=30;fillColor=none;horizontalStack=0;collapsible=1;marginBottom=10;swimlaneFillColor=#ffffff;portConstraint=eastwest;rounded=1;shadow=1;html=1;");
+			console.log(json);
+			var v1 = graph.insertVertex(parent, json.ld_id, this.setModelName(json), x, y,180, 0,"swimlane;fontStyle=0;childLayout=stackLayout;marginTop=6;horizontal=1;startSize=30;fillColor=none;horizontalStack=0;collapsible=1;marginBottom=10;swimlaneFillColor=#ffffff;portConstraint=eastwest;rounded=1;shadow=1;html=1;");
 			//var v1_title = graph.insertVertex(v1, null, "<b>"+json.name+"</b></br><i>&lt;"+json.base+"&gt;</i>", x, y,180, 30,"portConstraint=eastwest;rounded=1;shadow=1;html=1;");
-			if(!models[json.name]) {models[json.name]={};}
 			//console.log(v1);
 			mxEvent.addListener(graph.container, 'keypress', mxUtils.bind(v1, function(evt)
 			{
@@ -470,48 +568,7 @@ Model.prototype.createModel = function(x, y,json){
 			    }
 			  }
 			}));
-			models[json.name]['vertex'] = v1;
-			models[json.name]['json'] = json;
-			models[json.name]['rel'] = {};
-			///create properties
-			for (var key in json.properties) {//autoSizeCell
-			  if (json.properties.hasOwnProperty(key)) {
-				var required = (json.properties[key].required)?"* ":"";
-				properties = "<p>"+required+key+":<b>"+json.properties[key].type+"</b></p>";//autoSizeCell=1;autoSizeCell=1;resizeParent=1;h
-				var poper = graph.insertVertex(v1, null, properties,20, 20, 80, 30,'strokeColor=none;portConstraint=eastwest;html=1;');
-			  }
-			}
-			//var v2 = graph.insertVertex(v1, null, 'v1', 20, 20, 80, 30,'strokeColor=none');
-			//var keys = graph.insertVertex(v1, null, "",0, 0, 80, 30, 'strokeColor=none;portConstraint=eastwest;rounded=1;html=1;');
-			//graph.insertVertex(v1, null, '',20, 20, 1, 1,"line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];rounded=1;portConstraint=eastwest;");
-			//var rels = graph.insertVertex(v1, null, "",0, 0, 80, 30, 'strokeColor=none;portConstraint=eastwest;rounded=1;html=1;');
-			var rels = [];
-			var extra_Relations
-			for (var key in json.relations) {
-			  if (json.relations.hasOwnProperty(key)) {
-				rel = "<p>"+((json.relations[key].foreignKey)?json.relations[key].foreignKey+"(FK)":((json.relations[key].type=='belongsTo')?key+"Id":key))+"@<b>"+key+"</b></p>";
-				//autoSizeCell=1;resizeParent=1;
-				if(json.relations[key].type=='belongsTo'){
-					var poper = graph.insertVertex(v1, null, rel,20, 20, 80, 30, 'strokeColor=none;portConstraint=eastwest;rounded=1;html=1;');
-					models[json.name]['rel'][json.relations[key].model] = {
-						'json':json.relations[key],
-						'vertex': poper
-					};
-				}
-				else{
-					rels.push({key:key, rel:rel});
-				}
-			  }
-			}
-			graph.insertVertex(v1, null, '',20, 20, 1, 1,"line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];rounded=1;portConstraint=eastwest;");
-			rels.forEach(function(item, idx){
-				console.log(item);
-				var poper = graph.insertVertex(v1, null, item.rel,20, 20, 80, 30, 'strokeColor=none;portConstraint=eastwest;rounded=1;html=1;');
-				models[json.name]['rel'][json.relations[item.key].model] = {
-					'json':json.relations[item.key],
-					'vertex': poper
-				};
-			});
+			this.fillModel(v1, json);
 			this.createRelation();
 			//applyLayout();
 			return v1;

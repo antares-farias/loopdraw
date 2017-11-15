@@ -1,9 +1,7 @@
 # LoopDraw
-A visual diagram interface for loopback backend
 
-## Code Example
+A visual diagram interface for loopback backend works with 2.x and 3.x 
 
-Show what the library does as concisely as possible, developers should be able to figure out **how** your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
 
 ## Motivation
 
@@ -11,15 +9,30 @@ A short description of the motivation behind the creation and maintenance of the
 
 ## Installation
 
-Provide code examples and explanations of how to get the project.
+npm install --save-dev loopdraw
 
+Add this code to your server.js
+´var loopdraw = require('loopdraw');
+
+var app = module.exports = loopback();
+..
+app.start = function() {
+  // start the web server
+  return app.listen(function() {
+    ...
+    if (app.get('loopdraw')) {
+      var explorerPath = app.get('loopdraw').mountPath;
+      console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
+    }
+    ...
+  }´
 ## API Reference
 
 Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
 
 ## Tests
 
-Describe and show how to run the tests with code examples.
+  `npm test`
 
 ## Contributors
 

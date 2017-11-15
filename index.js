@@ -123,13 +123,14 @@ function open(res){
     };
 }
 function models_data(res){
-    /*fs.readFile('index.js',function(err, data){
-    });*/
+    const uuidv4 = require('uuid/v4');
+    const MY_NAMESPACE = uuidv4();
+    // Generate a couple namespace uuids 
+    const uuidv5 = require('uuid/v5');
     return  function(req, res) {
         //'../../server/boot/model-config.json'
         fs.readFile('server/model-config.json',"utf8",function(err, data){
             var config = JSON.parse(data);
-            //config._meta.sources[2]
             fs.readdir("server/"+config._meta.sources[2],function(err, data){
                 var filesPath = [];
                 data.forEach(function(item, idx){
@@ -138,10 +139,7 @@ function models_data(res){
                     }
                 });
                 //var dirPath= "server/../common/models/";
-                //console.log(dirPath);
                 var dirPath= "server/"+config._meta.sources[2]+"/";
-                //console.log(dirPath);
-                //console.log(filesPath);
                 var filesPath2 = filesPath.map(function(filePath){ //generating paths to file
                     return dirPath + filePath;
                 });
@@ -155,26 +153,16 @@ function models_data(res){
                     var resul = [{'saved_dir':"server/"+config._meta.sources[2]+'/diagram'}];
                     //console.log(filesPath);
                     results.forEach(function (item, idx){
-                        console.log(filesPath[idx]);
-                        //resul[filesPath[idx]] = 
                         var temp_item = JSON.parse(item);
-                        temp_item.ld_id = 42;
+                        if(!temp_item.ld_id){
+                            temp_item.ld_id = uuidv5(filesPath[idx], MY_NAMESPACE);
+                        }
                         //Serialize as JSON and Write it to a file
                         fs.writeFileSync("server/"+config._meta.sources[2]+'/'+filesPath[idx], JSON.stringify(temp_item, null, 2));
                         temp_item['file'] = filesPath[idx];
                         resul.push(temp_item);
                         //change the value in the in-memory object
                     })
-                    fs.stat(filesPath2[0], function(err, data){
-                        console.log(data);
-                    });
-                     fs.stat(filesPath2[1], function(err, data){
-                        console.log(data);
-                    });
-                     fs.stat(filesPath2[2], function(err, data){
-                        console.log(data);
-                    });
-                    //resul;
                     res.send(resul); //sending all data to client
                 });
                 /*fs.readFile('server/../commondel-config.json',"utf8",function(err, data){

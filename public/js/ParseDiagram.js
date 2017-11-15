@@ -38,8 +38,10 @@ ParseDiagram.prototype.parseXml = function(xml) {
 }
 ParseDiagram.prototype.converXML2Model = function(xml){
     var json = xml2json(this.parseXml(xml));
+    console.log(json);
     json = json.replace("undefined", "");
     json = JSON.parse(json);
+    console.log(json);
     var model_file = {};
     var prop_file = {};
     var rel_file = {};
@@ -52,7 +54,11 @@ ParseDiagram.prototype.converXML2Model = function(xml){
         if(item['@edge']){
             //console.log("pross id:"+item['@id']+"  "+item['@value']);
         }
+        //console.log(item['@parent'], item['@id']);
+       //if(item['@parent'] == -1){ item['@parent'] = 1000;}
+       // if(item['@id'] == -1){ item['@id'] = 1000;}
         //Model
+        console.log(item['@value'], item['@id']);
         if(item['@parent'] == 0 && item['@edge'] != 1){
             //console.log(item);
             //console.log($(item['@value']).html());
@@ -62,6 +68,7 @@ ParseDiagram.prototype.converXML2Model = function(xml){
             arr_idx.push(item['@id']);
             var name = $(""+item['@value']+"").html();
             if(name){
+                model_file[item['@id']].id = item['@id'];
                 name = name.replace("<b>","");
                 name = name.replace("</b>","");
                 model_file[item['@id']].name = name;
@@ -105,28 +112,32 @@ ParseDiagram.prototype.converXML2Model = function(xml){
             }
             //properties
             else{
-                var prop1 = prop.split(":");
-                //console.log("prop "+item['@id']);
-                prop_file[item['@id']] = {
-                    parent_id : item['@parent'],
-                    model : model_file[item['@parent']].name,
-                    name : prop1[0],
-                    type : $(prop1[1]).html()
-                };
-                //arr_name[item['@id']] = prop1[1];
-                var required = false;
-                if(prop.indexOf("*") >= 0){
-                    required = true;
-                    prop = prop1[0].substring(2);
-                }
-                else{
-                    prop = prop1[0];
-                }
-                //var info_prop = prop1[0].split(" ");
-                model_file[item['@parent']].properties[prop] = {
-                    required: required, 
-                    type: prop1[1]
-                };
+                //if(item['@parent'] >= 0){
+                    var prop1 = prop.split(":");
+                    //console.log("prop "+item['@id']);
+                    console.log(model_file, item['@parent'], prop);
+                    prop_file[item['@id']] = {
+                        parent_id : item['@parent'],
+                        model : model_file[item['@parent']].name,
+                        name : prop1[0],
+                        type : $(prop1[1]).html()
+                    };
+                    //arr_name[item['@id']] = prop1[1];
+                    var required = false;
+                    if(prop.indexOf("*") >= 0){
+                        required = true;
+                        prop = prop1[0].substring(2);
+                    }
+                    else{
+                        prop = prop1[0];
+                    }
+                    //var info_prop = prop1[0].split(" ");
+                    if(!model_file[item['@parent']].properties){model_file[item['@parent']].properties = {};}
+                    model_file[item['@parent']].properties[prop] = {
+                        required: required, 
+                        type: prop1[1]
+                    };
+                //}
             }
         }
         //Relations 
@@ -196,7 +207,10 @@ ParseDiagram.prototype.parseJson2Keys = function (json){
             if(name){
                 name = name.replace("<b>", "");
                 name = name.replace("</b>", "");
-                json_resp[name]  = item;
+                if(!item.id){
+                    item.id = item.ld_id;
+                }
+                json_resp[item.id]  = item;
                 //console.log(name);
             }
         }
@@ -210,6 +224,7 @@ ParseDiagram.prototype.comparator = function (json_base, json_new){
         "file",
         "methods",
         "validations",
+        "ld_id",
         "options",
         "idInjection",
         "plural", //what ?
@@ -225,12 +240,17 @@ ParseDiagram.prototype.comparator = function (json_base, json_new){
             }
         }
     }*/
+    //console.log('comparator', model);
     var test = this.objComp(json_base, json_new,{},"") ;
     return test;
 }
 ParseDiagram.prototype.objComp = function (base, jnew, erros, trace){
     for (var key in base) {
         if(this.exeption.indexOf(key) == -1){
+            var id = key;
+            if(base[key].id){
+                id = base[key].id;
+            }
             //console.log("KEY :: "+key+"="+base[key]);
             if(typeof(base[key]) == "object"){
                 if(!jnew[key]){
@@ -241,14 +261,14 @@ ParseDiagram.prototype.objComp = function (base, jnew, erros, trace){
                     erros[trace].push(
                         {
                             trace:trace,
-                            key : key,
+                            key : id,
                             original: base[key],
                             compared: jnew[key],
                             msj: "No Value"
                         });
                 }
                 else{
-                    var trace_sub = trace +":"+key;
+                    var trace_sub = trace +":"+id;
                     errors = this.objComp(base[key], jnew[key], erros, trace_sub);
                 }
             }
@@ -264,7 +284,7 @@ ParseDiagram.prototype.objComp = function (base, jnew, erros, trace){
                     erros[trace].push(
                         {
                             trace:trace,
-                            key : key,
+                            key : id,
                             original: base[key],
                             compared: jnew[key],
                             msj: "No Match"
