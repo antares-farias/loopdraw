@@ -3,10 +3,6 @@
 A visual diagram interface for loopback backend works with 2.x and 3.x 
 
 
-## Motivation
-
-A short description of the motivation behind the creation and maintenance of the project. This should explain **why** the project exists.
-
 ## Installation
 
 ````sh
