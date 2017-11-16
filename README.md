@@ -9,10 +9,13 @@ A short description of the motivation behind the creation and maintenance of the
 
 ## Installation
 
-npm install --save-dev loopdraw
+````sh
+$ npm install --save-dev loopdraw
+````
 
 Add this code to your **server/server.js**
-´´´
+
+```javascript
 var loopdraw = require('loopdraw');
 
 ...
@@ -27,30 +30,35 @@ app.start = function() {
     }
     ...
   }
-  ´´´
+```
 Add this code to your **server/component-config.json**
-´´´
+```javascript
   "loopdraw": {
     "mountPath": "/diagram"
   }
-´´´
+```
 
 ## Usage
 
 It will run along with the loopback server so:
 
-´´´ node . ´´´
+````sh
+$ node .
+````
 or 
-´´´ slc run ´´´
+````sh
+$ slc run
+````
 
 And then go to : 
-
+````
 http://localhost:3000/diagram
+````
 
 ## Tests
-
-  `npm test`
-
+````sh
+$ npm test
+````
 ## License
 
 Licensed for use under the MIT License (MIT). Please see LICENSE for more information.
