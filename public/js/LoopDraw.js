@@ -17,7 +17,7 @@ LoopDraw.prototype.init = function(){
         if (!Editor.useLocalStorage)
         {
             
-            mxUtils.post(OPEN_URL, '', mxUtils.bind(this, function(req)
+            /*mxUtils.post(OPEN_URL, '', mxUtils.bind(this, function(req)
             {
                 var enabled = req.getStatus() != 404;
                 this.actions.get('open').setEnabled(false);
@@ -25,7 +25,7 @@ LoopDraw.prototype.init = function(){
                 this.actions.get('save').setEnabled(enabled);
                 this.actions.get('saveAs').setEnabled(enabled);
                 this.actions.get('export').setEnabled(true);
-            }));
+            }));*/
         }
         graph = this.editor.graph;
         var parent = graph.getDefaultParent();

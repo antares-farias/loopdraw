@@ -17,9 +17,8 @@ function diagram(loopbackApplication, options) {
   options = _defaults({}, options, { mountPath: '/diagram' });
   var router = loopbackApplication.loopback.Router();
   var publicDir = path.join(__dirname + '/public');
-  console.log(publicDir);
   router.get(options.mountPath, testdraw());
-  router.get('/open', open());
+  //router.get('/open', open());
   router.get('/models_data', models_data());
   router.get(publicDir, testdraw());
   //loopbackApplication.use('/diagram', express.static(expose_dir));
@@ -33,7 +32,6 @@ function diagram(loopbackApplication, options) {
             var config = JSON.parse(data);
             var uploadDir = "../"+config._meta.sources[2]+'/diagram';
             var expose_dir = __dirname+"/"+uploadDir;
-            console.log(expose_dir);
            // if (fs.existsSync(expose_dir)) {
                 // Do something
                 //loopbackApplication.use('/static', express.static(__dirname + "/"+ uploadDir));
@@ -104,9 +102,7 @@ function upload(res){
     };
 }
 function testdraw(res){
-  console.log('test draw');
   return  function(req, res) {
-        console.log('write page');
         //res.send('<html><head></head><body class="vsc-initialized"><h1>Start here</h1></body></html>');
         //loopbackApplication.use(express.static(__dirname + '/public'));
         //res.sendFile(express.static(path.join(__dirname + '/public')));
@@ -175,4 +171,3 @@ function models_data(res){
         });
     };
 }
-//C:\xampp\htdocs\MY\loopdraw\node_modules\loopdraw\public
