@@ -20,7 +20,7 @@ LoopDraw.prototype.init = function(){
             mxUtils.post(OPEN_URL, '', mxUtils.bind(this, function(req)
             {
                 var enabled = req.getStatus() != 404;
-                this.actions.get('open').setEnabled(enabled || Graph.fileSupport);
+                this.actions.get('open').setEnabled(false);
                 this.actions.get('import').setEnabled(enabled || Graph.fileSupport);
                 this.actions.get('save').setEnabled(enabled);
                 this.actions.get('saveAs').setEnabled(enabled);
