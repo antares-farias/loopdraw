@@ -4883,31 +4883,31 @@ DiagramFormatPanel.prototype.addStyleOps = function(div)
 DiagramFormatPanel.prototype.addLoopdrawOps= function(div)
 {
 	//console.log('addLoopdrawOps')
-	var btn = mxUtils.button(mxResources.get('compare'), mxUtils.bind(this, function(evt)
+	var btn = mxUtils.button(mxResources.get('saveXMLServer'), mxUtils.bind(this, function(evt)
 	{
-		this.editorUi.actions.get('compareToJson').funct();
+		this.editorUi.actions.get('saveXMLServer').funct();
 	}));
 
-	btn.setAttribute('title', mxResources.get('compare') + ' (' + this.editorUi.actions.get('compareToJson').shortcut + ')');
+	btn.setAttribute('title', mxResources.get('saveXMLServer') + ' (' + this.editorUi.actions.get('saveXMLServer').shortcut + ')');
 	btn.style.width = '202px';
 	btn.style.marginBottom = '2px';
 	div.appendChild(btn);
 
 	mxUtils.br(div);
 	
-	btn = mxUtils.button(mxResources.get('updateJson'), mxUtils.bind(this, function(evt)
+	btn = mxUtils.button(mxResources.get('updateToJson'), mxUtils.bind(this, function(evt)
 	{
 		this.editorUi.actions.get('updateToJson').funct();
 	}));
 	
 
-	btn.setAttribute('title', mxResources.get('updateJson') + ' (' + this.editorUi.actions.get('updateToJson').shortcut + ')');
+	btn.setAttribute('title', mxResources.get('updateToJson') + ' (' + this.editorUi.actions.get('updateToJson').shortcut + ')');
 	btn.style.width = '202px';
 	div.appendChild(btn);
 	//console.log( this.editorUi.actions.get('clearDefaultStyle').shortcut);
 
 	mxUtils.br(div);
-	var btn = mxUtils.button(mxResources.get('reloadJson'), mxUtils.bind(this, function(evt)
+	var btn = mxUtils.button(mxResources.get('loadFromJson'), mxUtils.bind(this, function(evt)
 	{
 		this.editorUi.actions.get('loadFromJson').funct();
 	}));

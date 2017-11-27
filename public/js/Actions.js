@@ -68,9 +68,12 @@ Actions.prototype.init = function()
 			window.openFile = null;
 		});
 	}).isEnabled = isGraphEnabled;
-	this.addAction('save', function() { ui.saveFile(false); }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;
-	this.addAction('saveAs...', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+Shift+S').isEnabled = isGraphEnabled;
+	//this.addAction('save', function() { ui.saveFile(false); }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;
+	//this.addAction('saveAs...', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+Shift+S').isEnabled = isGraphEnabled;
 	this.addAction('saveXMLServer', function() { ui.saveFileServer(false); }, null, null, Editor.ctrlKey + '+Shift+S').isEnabled = isGraphEnabled;
+	this.addAction('loadFromJson', function() { ui.loadFromJson(false); }, null, 'asdf', Editor.ctrlKey + '+Shift+1');
+	this.addAction('updateToJson', function() { ui.updateToJson(false); }, null, null, Editor.ctrlKey + '+Shift+2');
+	//this.addAction('compareToJson', function() { ui.compareToJson(false); }, null, null, Editor.ctrlKey + '+Shift+C').isEnabled = isGraphEnabled;
 	this.addAction('export...', function() { ui.showDialog(new ExportDialog(ui).container, 300, 230, true, true); });
 	this.addAction('editDiagram...', function()
 	{
@@ -94,9 +97,7 @@ Actions.prototype.init = function()
 			mxClipboard.paste(graph);
 		}
 	}, false, 'sprite-paste', Editor.ctrlKey + '+V');
-	this.addAction('updateToJson', function() { ui.updateToJson(false); }, null, null, Editor.ctrlKey + '+Shift+U').isEnabled = isGraphEnabled;
-	this.addAction('compareToJson', function() { ui.compareToJson(false); }, null, null, Editor.ctrlKey + '+Shift+C').isEnabled = isGraphEnabled;
-	this.addAction('loadFromJson', function() { ui.loadFromJson(false); }, null, null, Editor.ctrlKey + '+Shift+L').isEnabled = isGraphEnabled;
+	console.log('add listeners');
 	this.addAction('pasteHere', function(evt)
 	{
 		if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent()))

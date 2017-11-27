@@ -58,6 +58,10 @@ Model.prototype.loadJSON = function(callback){
     model = this;
     $.getJSON('/models_data', function(json_loop) {
         model.master.json = json_loop;
+		if(callback){
+			callback({}, model);
+			callback({}, model);
+		}
     });
 }
 Model.prototype.getModels = function(editor_ui){
@@ -173,7 +177,7 @@ Model.prototype.fillVertex = function(){
 	console.log(this.master.relation);
 	//graph.model.setValue(cell, "test ruls");
 }
-Model.prototype.updateModels = function(res_result){
+Model.prototype.updateModels = function(res_result, model){
 	/*
 		Casos:
 		cambio el nombre de una llave
@@ -183,11 +187,13 @@ Model.prototype.updateModels = function(res_result){
 		if in json added
 		if value diferent updated
 	*/
-	var model = this;
+	if(!model){
+		model = this;
+	}
 	
 	console.log(graph.model);
 	console.log(model);
-	var result = this.actionCompare();
+	var result = model.actionCompare();
 	var result1 = result['check_json'];
 	var result2 = result['check_xml'];
 	console.log(result);
@@ -245,7 +251,7 @@ Model.prototype.updateModels = function(res_result){
 			model.createModel(10,10, model.master.json_key[item.key]);
 		});
 	}
-	this.updateRelation(update_arr);
+	model.updateRelation(update_arr);
 	return 0;
 	/*result2.forEach(function(item, idx){
 		var path = item.trace.split(":");

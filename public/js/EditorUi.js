@@ -3330,18 +3330,8 @@ EditorUi.prototype.saveFileServer = function(forceDialog)
 };
 EditorUi.prototype.updateToJson = function(forceDialog){
 	console.log('updateToJson');
-	/*var cells = [];
-	var temp_cells = this.editor.graph.model.cells[0].children;
-	for(i=1;i<temp_cells.length;i++){
-		cells.push(temp_cells[i]);
-	}
-	this.editor.graph.removeCells(cells, true);
-	var parent =  this.editor.graph.getDefaultParent();
-	var graph = this.editor.graph;
-	graph.removeCells(graph.getChildVertices(graph.getDefaultParent()),true, true);
-	test.models.loadXML = false;
-	test.models.getModels(this);*/
-	test.models.updateModels({});
+	test.models.loadJSON(test.models.updateModels);
+	//test.models.updateModels({});
 };
 EditorUi.prototype.compareToJson = function(forceDialog){
 	console.log('compareToJson');
@@ -3351,7 +3341,13 @@ EditorUi.prototype.loadFromJson = function(forceDialog){
 	console.log('loadFromJson');
 	var cells = [];
 	var temp_cells = this.editor.graph.model.cells[0].children;
-	for(i=1;i<temp_cells.length;i++){
+	var start_i = 1;
+	if(temp_cells && temp_cells.length==1){
+		console.log(temp_cells);
+		temp_cells = temp_cells[0].children;
+		start_i=0;
+	}
+	for(i=start_i;i<temp_cells.length;i++){
 		cells.push(temp_cells[i]);
 	}
 	this.editor.graph.removeCells(cells, true);
@@ -3360,6 +3356,8 @@ EditorUi.prototype.loadFromJson = function(forceDialog){
 	//graph.removeCells(graph.getChildVertices(graph.getDefaultParent()),true, true);
 	test.models.loadXML = false;
 	test.models.getModels(this);
+	//test.models.getModels(this);
+	test.models.createRelation();
 
 };
 EditorUi.prototype.upload = function (text, name, type){
@@ -3991,8 +3989,12 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		keyHandler.bindAction(48, true, 'customZoom'); // Ctrl+0
 		keyHandler.bindAction(82, true, 'turn'); // Ctrl+R
 		keyHandler.bindAction(82, true, 'clearDefaultStyle', true); // Ctrl+Shift+R
-		keyHandler.bindAction(83, true, 'save'); // Ctrl+S
-		keyHandler.bindAction(83, true, 'saveAs', true); // Ctrl+Shift+S
+		keyHandler.bindAction(83, true, 'saveXMLServer'); // Ctrl+S
+		keyHandler.bindAction(83, true, 'saveXMLServer', true); // Ctrl+Shift+S
+
+		keyHandler.bindAction(49, true, 'loadFromJson', true); // Ctrl+Shift+1
+		keyHandler.bindAction(50, true, 'updateToJson', true); // Ctrl+Shift+2
+
 		keyHandler.bindAction(65, true, 'selectAll'); // Ctrl+A
 		keyHandler.bindAction(65, true, 'selectNone', true); // Ctrl+A
 		keyHandler.bindAction(73, true, 'selectVertices', true); // Ctrl+Shift+I

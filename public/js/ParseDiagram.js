@@ -59,7 +59,7 @@ ParseDiagram.prototype.converXML2Model = function(xml){
        // if(item['@id'] == -1){ item['@id'] = 1000;}
         //Model
         console.log(item['@value'], item['@id']);
-        if(item['@parent'] == 0 && item['@edge'] != 1){
+        if((item['@parent'] == 0 || item['@parent'] == -1) && item['@edge'] != 1){
             //console.log(item);
             //console.log($(item['@value']).html());
             if(!model_file[item['@id']]){
