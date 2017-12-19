@@ -1,4 +1,4 @@
-// Copyright IBM Corp. 2013,2016. All Rights Reserved.
+// 2017
 // Node module: loopdraw
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
@@ -20,6 +20,7 @@ function diagram(loopbackApplication, options) {
   router.get(options.mountPath, testdraw());
   //router.get('/open', open());
   router.get('/models_data', models_data());
+  router.get('/update_json', updateJson());
   router.get(publicDir, testdraw());
   //loopbackApplication.use('/diagram', express.static(expose_dir));
 
@@ -118,13 +119,59 @@ function open(res){
         res.sendFile(path.join(__dirname + '/public/open.html'));
     };
 }
+/**
+ * This is the function that updates the JSON  files
+ * 
+ *  @since 
+ *  @return null
+ */
+function updateJson(res){
+    const uuidv4 = require('uuid/v4');
+    const MY_NAMESPACE = uuidv4();
+    // Generate a couple namespace uuids 
+    const uuidv5 = require('uuid/v5');
+    return function(req, res){
+        var json_update =  req.param('json');
+        fs.readFile('server/model-config.json',"utf8",function(err, data){
+            var config = JSON.parse(data);
+            json_update.forEach(function(item, id){
+                var dirPath= "server/"+config._meta.sources[2]+"/";
+                if(item.id.length < 30){
+                    var file_name = (item.name+'.json').toLowerCase();
+                    json_update[id].ld_id = uuidv5(file_name, MY_NAMESPACE);
+                    json_update[id].id = undefined;
+                    json_update[id].idInjection = true;
+                    json_update[id].options =  {
+                        "validateUpsert": true
+                    };
+                    json_update[id].validations = [];
+                    json_update[id].acls = [];
+                    json_update[id].methods = {};
+                    json_update[id].file = file_name;
+                    fs.writeFileSync(dirPath+json_update[id].file, JSON.stringify(json_update[id], null, 2));
+                    var model_name = item.name.charAt(0).toUpperCase() + item.name.slice(1);
+                    fs.writeFileSync(dirPath+item.name.toLowerCase()+".js", "module.exports = function("+model_name+") {};");
+                }
+                else{
+                     fs.readFile(dirPath+(item.name).toLowerCase()+".json","utf8",function(err, data){
+                        data = JSON.parse(data);
+                        data.name = item.name;
+                        data.base = item.base;
+                        data.properties = item.properties;
+                        data.relations = item.relations;
+                        fs.writeFileSync(dirPath+item.name.toLowerCase()+".json",JSON.stringify(data, null, 2) );
+                     });
+                }
+            });
+        });
+    }
+}
 function models_data(res){
     const uuidv4 = require('uuid/v4');
     const MY_NAMESPACE = uuidv4();
     // Generate a couple namespace uuids 
     const uuidv5 = require('uuid/v5');
     return  function(req, res) {
-        //'../../server/boot/model-config.json'
         fs.readFile('server/model-config.json',"utf8",function(err, data){
             var config = JSON.parse(data);
             fs.readdir("server/"+config._meta.sources[2],function(err, data){
@@ -134,20 +181,15 @@ function models_data(res){
                         filesPath.push(item);
                     }
                 });
-                //var dirPath= "server/../common/models/";
                 var dirPath= "server/"+config._meta.sources[2]+"/";
                 var filesPath2 = filesPath.map(function(filePath){ //generating paths to file
                     return dirPath + filePath;
                 });
-                //console.log(filesPath2);
                 async.map(filesPath2, function(filePath, cb){ //reading files or dir
-                    //console.log('reading :'+filePath);
                     fs.readFile(filePath, 'utf8', cb);
                 }, function(err, results) {
-                    //console.log(results); //this is state when all files are completely read
-
+                    //this is state when all files are completely read
                     var resul = [{'saved_dir':"server/"+config._meta.sources[2]+'/diagram'}];
-                    //console.log(filesPath);
                     results.forEach(function (item, idx){
                         var temp_item = JSON.parse(item);
                         if(!temp_item.ld_id){
@@ -161,12 +203,6 @@ function models_data(res){
                     })
                     res.send(resul); //sending all data to client
                 });
-                /*fs.readFile('server/../commondel-config.json',"utf8",function(err, data){
-
-                });*/
-                /*res.send({
-                    data:json_array
-                });*/
             })
         });
     };

@@ -47,6 +47,7 @@ Model.prototype.init = function(){
     this.loadXML = true;
     this.parser = new ParseDiagram();
 	this.rels = [];
+	this.json_error = false;
 }
 /*Model.prototype.createModel = function(){
 
@@ -142,7 +143,7 @@ Model.prototype.fillVertex = function(){
 	var new_xml =  new XMLSerializer().serializeToString(this.editor.editor.getGraphXml());
 	//console.log(""+new_xml);
 	//var new_xml =  mxUtils.getXml();
-	var json_file = this.parser.converXML2Model(""+new_xml);
+	var json_file = this.parser.converXML2Model(""+new_xml, this);
 	this.master.xml = json_file[0];
 	console.log(this.master.xml);
 	//comparator(parseJson2Keys(json_file), parseJson2Keys(json_loop));
@@ -228,8 +229,10 @@ Model.prototype.updateModels = function(res_result, model){
 		}
 	}
 	graph.model.cells[0].children.forEach(function (item, idx){
-		//console.log(item.style);
-		if(item.id.indexOf("-")>0 && update_arr[item.id]){
+		if(!item.id){
+			item.id = item.ld_id;
+		}
+		if((""+item.id).indexOf("-")>0 && update_arr[item.id]){
 			//console.log('update', item.id);
 			var json = model.master.json_key[item.id];
 			//console.log('json', json);
@@ -423,7 +426,7 @@ Model.prototype.updateRelation = function(toCheck_arr){
 		var json = this.master.json_key[key];
 		console.log(key+" "+id);
 		console.log(json);
-		if(json.relations){
+		if(json && json.relations){
 			console.log('here update relation ');
 			console.log(json.relations);
 			for(key in json.relations){
@@ -447,6 +450,9 @@ Model.prototype.updateRelation = function(toCheck_arr){
 
 			}
 		}
+		else {
+			this.pushMesage("no model or relation for :"+key);
+		}
 	}
 	console.log(models);
 	this.createRelation();
@@ -464,6 +470,18 @@ Model.prototype.fillRelation = function(json, name_rel, rel){
 	//rel[json.name].vertex = this.master.vertex[id_rel];
 
 	models[name_rel].rel = rel;
+}
+Model.prototype.updateJson = function(){
+	this.fillVertex();
+	var that = this;
+	var request = $.ajax({
+		url: "/update_json",
+		method: "GET",
+		data: {'json':that.master.xml}
+	});
+	request.done(function( msg ) {
+		console.log(msg);
+	});
 }
 /*
 Cases of comparison
@@ -689,4 +707,11 @@ Model.prototype.applyLayout = function (){
 		//console.log('start anima');
 		morph.startAnimation();
 	}
+}
+Model.prototype.pushMesage = function(msg, color){
+	if(color){
+		this.json_error = true;
+	}
+    $('.lightbox .content').append("<div style='color:"+color+"'>"+msg+"</div>");
+    $('.lightbox .content').scrollTop($('.lightbox .content')[0].scrollHeight);
 }

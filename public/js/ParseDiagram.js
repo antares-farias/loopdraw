@@ -36,12 +36,22 @@ ParseDiagram.prototype.parseXml = function(xml) {
         alert("cannot parse xml string!");
     return dom;
 }
-ParseDiagram.prototype.converXML2Model = function(xml){
+ParseDiagram.prototype.converXML2Model = function(xml, model){
     var json = xml2json(this.parseXml(xml));
-    console.log(json);
-    json = json.replace("undefined", "");
+    json = json.replace(/undefined/g, "");
+    json = json.replace(/"/g, "\\\"");
+    json = json.replace(/:\\\"/g, ":\"");
+    json = json.replace(/\\\",/g, "\",");
+    json = json.replace(/\\\"}/g, "\"}");
+    json = json.replace(/:\\\"/g, ":\"");
+    json = json.replace(/\\\"m/g, "\"m");
+    json = json.replace(/=\"m/g, "=\\\"m");
+    json = json.replace(/{\\\"/g, "{\"");
+    json = json.replace(/,\\\"/g, ",\"");
+    json = json.replace(/\\\":/g, "\":");
+    //console.log(json);
     json = JSON.parse(json);
-    console.log(json);
+    //console.log(json);
     var model_file = {};
     var prop_file = {};
     var rel_file = {};
@@ -74,6 +84,15 @@ ParseDiagram.prototype.converXML2Model = function(xml){
                 model_file[item['@id']].name = name;
                 if(item['@value']){
                     var base = $((item['@value'].split("</div>"))[1]).html();
+                    if(!base){
+                        console.log(item['@value']);
+                        model.pushMesage("ERROR: Bad header format for:", "#FF0000");
+                        model.pushMesage("<hr>");
+                        model.pushMesage($(item['@value']).html());
+                        model.pushMesage("<hr>");
+                        model.pushMesage("Please check the help to see the correct headera formatint ", "#FF0000");
+                        return 0;
+                    }
                     base = base.substring(4, (base.length-4));
                     base = base.replace("lt;","");
                     base = base.replace("&gt;","");
@@ -89,7 +108,15 @@ ParseDiagram.prototype.converXML2Model = function(xml){
         //Properties
         else if(item['@edge'] != 1 && item['@value']){
             //console.log(item);
-            var prop = $(item['@value']).html();
+            if(item['@value'].substring(0,1)!="<"){
+                var prop = $("<div>"+item['@value']+"</div>").html();
+            }
+            else{
+                var prop = $(item['@value']).html();
+            }
+            if(!prop){
+                console.log(prop);
+            }
             prop = prop.replace("<b>","");
             prop = prop.replace("</b>","");
             //console.log(prop);

@@ -4904,6 +4904,17 @@ DiagramFormatPanel.prototype.addLoopdrawOps= function(div)
 	btn.setAttribute('title', mxResources.get('updateToJson') + ' (' + this.editorUi.actions.get('updateToJson').shortcut + ')');
 	btn.style.width = '202px';
 	div.appendChild(btn);
+
+	mxUtils.br(div);
+	btn = mxUtils.button(mxResources.get('updateJson'), mxUtils.bind(this, function(evt)
+	{
+		this.editorUi.actions.get('updateJson').funct();
+	}));
+	
+
+	btn.setAttribute('title', mxResources.get('updateJson') + ' (' + this.editorUi.actions.get('updateJson').shortcut + ')');
+	btn.style.width = '202px';
+	div.appendChild(btn);
 	//console.log( this.editorUi.actions.get('clearDefaultStyle').shortcut);
 
 	mxUtils.br(div);

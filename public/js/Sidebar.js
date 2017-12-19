@@ -160,12 +160,12 @@ Sidebar.prototype.gearImage = STENCIL_PATH + '/clipart/Gear_128x128.png';
 /**
  * Specifies the width of the thumbnails.
  */
-Sidebar.prototype.thumbWidth = 36;
+Sidebar.prototype.thumbWidth = 72;
 
 /**
  * Specifies the height of the thumbnails.
  */
-Sidebar.prototype.thumbHeight = 36;
+Sidebar.prototype.thumbHeight = 72;
 
 /**
  * Specifies the padding for the thumbnails. Default is 3.
@@ -1192,7 +1192,7 @@ Sidebar.prototype.addUmlPalette = function(expand)
 	var sb = this;
 
 	// Reusable cells
-	var field = new mxCell('+ field: type', new mxGeometry(0, 0, 100, 26), 'text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;');
+	var field = new mxCell('field:<b>type</b>', new mxGeometry(0, 0, 100, 26), 'text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;');
 	field.vertex = true;
 
 	var divider = new mxCell('', new mxGeometry(0, 0, 40, 8), 'line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;');
@@ -1206,38 +1206,46 @@ Sidebar.prototype.addUmlPalette = function(expand)
    		//this.createVertexTemplateEntry('html=1;', 110, 50, '&laquo;interface&raquo;<br><b>Name</b>', 'Interface', null, null, dt + 'interface object instance annotated annotation'),
 	 	this.addEntry(dt + 'object instance', function()
 		{
-			var cell = new mxCell('Classname', new mxGeometry(0, 0, 160, 90),
-		    	'swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;');
+			var cell = new mxCell('<div><b>ModelName</b></div><div><i>&lt;PersistedModel&gt;</i></div>', new mxGeometry(0, 0, 160, 90),
+		    	'swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;html=1;rounded=1;shadow=1;marginTop=36;');
 			cell.vertex = true;
 			cell.insert(field.clone());
 			cell.insert(divider.clone());
-			cell.insert(sb.cloneCell(field, '+ method(type): type'));
+			cell.insert(sb.cloneCell(field, 'fk_name(FK)@<b>relation_name</b>'));
 			
 			return sb.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, 'Class'); 
 		}),
-		this.addEntry(dt + 'section subsection', function()
+		/*this.addEntry(dt + 'section subsection', function()
 		{
 			var cell = new mxCell('Classname', new mxGeometry(0, 0, 140, 110),
-		    	'swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;');
+		    	'swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;html=1;marginTop=36;');
 			cell.vertex = true;
 			cell.insert(field.clone());
 			cell.insert(field.clone());
 			cell.insert(field.clone());
 			
 			return sb.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, 'Class 2');
+		}),*/
+		this.addEntry(dt + 'item member method function variable field attribute label', function()
+		{
+			return sb.createVertexTemplateFromCells([sb.cloneCell(field, 'field:<b>type</b>')], field.geometry.width, field.geometry.height, 'Propertie');
 		}),
 		this.addEntry(dt + 'item member method function variable field attribute label', function()
 		{
-			return sb.createVertexTemplateFromCells([sb.cloneCell(field, '+ item: attribute')], field.geometry.width, field.geometry.height, 'Item 1');
+			return sb.createVertexTemplateFromCells([sb.cloneCell(field, '* field:<b>type</b>')], field.geometry.width, field.geometry.height, 'Required Propertie');
 		}),
-   		this.addEntry(dt + 'item member method function variable field attribute label', function()
+		this.addEntry(dt + 'item member method function variable field attribute label', function()
+		{
+			return sb.createVertexTemplateFromCells([sb.cloneCell(field, 'fk_name(FK)@<b>relation_name</b>')], field.geometry.width, field.geometry.height, 'Relation FK');
+		}),
+   		/*this.addEntry(dt + 'item member method function variable field attribute label', function()
 		{
    			var cell = new mxCell('item: attribute', new mxGeometry(0, 0, 120, field.geometry.height), 'label;fontStyle=0;strokeColor=none;fillColor=none;align=left;verticalAlign=top;overflow=hidden;' +
    				'spacingLeft=28;spacingRight=4;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;imageWidth=16;imageHeight=16;image=' + sb.gearImage);
    			cell.vertex = true;
    			
 			return sb.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, 'Item 2');
-		}),
+		}),*/
 		this.addEntry(dt + 'divider hline line separator', function()
 		{
 			return sb.createVertexTemplateFromCells([divider.clone()], divider.geometry.width, divider.geometry.height, 'Divider');
@@ -1249,8 +1257,8 @@ Sidebar.prototype.addUmlPalette = function(expand)
 			
 			return sb.createVertexTemplateFromCells([cell.clone()], cell.geometry.width, cell.geometry.height, 'Spacer');
 		}),
-		this.createVertexTemplateEntry('text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;',
-			80, 26, 'Title', 'Title', null, null, dt + 'title label'),
+		this.createVertexTemplateEntry('text;align=center;fontStyle=0;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;',
+			80, 26, '<div><b>ModelName</b></div><div><i>&lt;PersistedModel&gt;</i></div>', 'ModelName', null, null, dt + 'title label'),
 		/*this.addEntry(dt + 'component', function()
 		{
 		    var cell = new mxCell('&laquo;Annotation&raquo;<br/><b>Component</b>', new mxGeometry(0, 0, 180, 90), 'html=1;');
@@ -1279,7 +1287,7 @@ Sidebar.prototype.addUmlPalette = function(expand)
 	    	
 	    	return sb.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, 'Component with Attributes');
 		}),*/
-		this.createVertexTemplateEntry('verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;',
+		/*this.createVertexTemplateEntry('verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;',
 			180, 120, 'Block', 'Block', null, null, dt + 'block'),
 		this.createVertexTemplateEntry('shape=component;align=left;spacingLeft=36;', 120, 60, 'Module', 'Module', null, null, dt + 'module'),
 		this.createVertexTemplateEntry('shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;', 70, 50,
@@ -1292,8 +1300,8 @@ Sidebar.prototype.addUmlPalette = function(expand)
 			'<div style="box-sizing:border-box;width:100%;background:#e4e4e4;padding:2px;">Tablename</div>' +
 			'<table style="width:100%;font-size:1em;" cellpadding="2" cellspacing="0">' +
 			'<tr><td>PK</td><td>uniqueId</td></tr><tr><td>FK1</td><td>' +
-			'foreignKey</td></tr><tr><td></td><td>fieldname</td></tr></table>', 'Entity', null, null, 'er entity table'),
-		this.addEntry(dt + 'object instance', function()
+			'foreignKey</td></tr><tr><td></td><td>fieldname</td></tr></table>', 'Entity', null, null, 'er entity table'),*/
+		/*this.addEntry(dt + 'object instance', function()
 		{
 		    var cell = new mxCell('<p style="margin:0px;margin-top:4px;text-align:center;">' +
 	    			'<b>Class</b></p>' +
@@ -1302,8 +1310,8 @@ Sidebar.prototype.addUmlPalette = function(expand)
 		    cell.vertex = true;
 			
 			return sb.createVertexTemplateFromCells([cell.clone()], cell.geometry.width, cell.geometry.height, 'Class 3');
-		}),
-		this.addEntry(dt + 'object instance', function()
+		}),*/
+		/*this.addEntry(dt + 'object instance', function()
 		{
 		    var cell = new mxCell('<p style="margin:0px;margin-top:4px;text-align:center;">' +
 	    			'<b>Class</b></p>' +
@@ -1337,7 +1345,7 @@ Sidebar.prototype.addUmlPalette = function(expand)
 		    cell.vertex = true;
 			
 			return sb.createVertexTemplateFromCells([cell.clone()], cell.geometry.width, cell.geometry.height, 'Interface 2');
-		}),
+		}),*/
 		/*this.createVertexTemplateEntry('shape=lollipop;direction=south;html=1;', 30, 10, '', 'Provided Interface', null, null, dt + 'provided interface'),
 		this.createVertexTemplateEntry('shape=requires;direction=north;html=1;', 30, 20, '', 'Required Interface', null, null, dt + 'required interface'),
 		this.createVertexTemplateEntry('shape=umlBoundary;whiteSpace=wrap;html=1;', 100, 80, 'Boundary Object', 'Boundary Object', null, null, 'uml boundary object'),
@@ -1514,7 +1522,7 @@ Sidebar.prototype.addUmlPalette = function(expand)
 			
 			return sb.createEdgeTemplateFromCells([edge], 80, 0, 'Return');
 		}),*/
-		this.addEntry('uml relation', function()
+		/*this.addEntry('uml relation', function()
 		{
 			var edge = new mxCell('name', new mxGeometry(0, 0, 0, 0), 'endArrow=block;endFill=1;html=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=top;');
 			edge.geometry.setTerminalPoint(new mxPoint(0, 0), true);
@@ -1530,7 +1538,7 @@ Sidebar.prototype.addUmlPalette = function(expand)
 	    	edge.insert(cell);
 	    	
 			return sb.createEdgeTemplateFromCells([edge], 160, 0, 'Relation 1');
-		}),
+		}),*/
 		/*this.addEntry('uml association', function()
 		{
 			var edge = new mxCell('', new mxGeometry(0, 0, 0, 0), 'endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;');
@@ -1553,7 +1561,7 @@ Sidebar.prototype.addUmlPalette = function(expand)
 	    	
 			return sb.createEdgeTemplateFromCells([edge], 160, 0, 'Association 1');
 		}),*/
-		this.addEntry('uml aggregation', function()
+		/*this.addEntry('uml aggregation', function()
 		{
 			var edge = new mxCell('1', new mxGeometry(0, 0, 0, 0), 'endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=0;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;');
 			edge.geometry.setTerminalPoint(new mxPoint(0, 0), true);
@@ -1576,16 +1584,16 @@ Sidebar.prototype.addUmlPalette = function(expand)
 			edge.edge = true;
 			
 			return sb.createEdgeTemplateFromCells([edge], 160, 0, 'Composition 1');
-		}),
+		}),*/
 		this.addEntry('uml relation', function()
 		{
-			var edge = new mxCell('Relation', new mxGeometry(0, 0, 0, 0), 'endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=0;edgeStyle=orthogonalEdgeStyle;');
+			var edge = new mxCell('hasOne', new mxGeometry(0, 0, 0, 0), 'endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=0;edgeStyle=orthogonalEdgeStyle;');
 			edge.geometry.setTerminalPoint(new mxPoint(0, 0), true);
 			edge.geometry.setTerminalPoint(new mxPoint(160, 0), false);
 			edge.geometry.relative = true;
 			edge.edge = true;
 			
-	    	var cell1 = new mxCell('0..n', new mxGeometry(-1, 0, 0, 0), 'resizable=0;html=1;align=left;verticalAlign=top;labelBackgroundColor=#ffffff;fontSize=10;');
+	    	/*var cell1 = new mxCell('0..n', new mxGeometry(-1, 0, 0, 0), 'resizable=0;html=1;align=left;verticalAlign=top;labelBackgroundColor=#ffffff;fontSize=10;');
 	    	cell1.geometry.relative = true;
 	    	cell1.setConnectable(false);
 	    	cell1.vertex = true;
@@ -1595,24 +1603,71 @@ Sidebar.prototype.addUmlPalette = function(expand)
 	    	cell2.geometry.relative = true;
 	    	cell2.setConnectable(false);
 	    	cell2.vertex = true;
-	    	edge.insert(cell2);
+	    	edge.insert(cell2);*/
 	    	
-			return sb.createEdgeTemplateFromCells([edge], 160, 0, 'Relation 2');
+			return sb.createEdgeTemplateFromCells([edge], 160, 0, 'Relation HasOne');
 		}),
-		this.createEdgeTemplateEntry('endArrow=open;endSize=12;dashed=1;html=1;', 160, 0, 'Use', 'Dependency', null, 'uml dependency use'),
-		this.createEdgeTemplateEntry('endArrow=block;endSize=16;endFill=0;html=1;', 160, 0, 'Extends', 'Generalization', null, 'uml generalization extend'),
-	 	this.createEdgeTemplateEntry('endArrow=block;startArrow=block;endFill=1;startFill=1;html=1;', 160, 0, '', 'Association 2', null, 'uml association'),
-	 	this.createEdgeTemplateEntry('endArrow=open;startArrow=circlePlus;endFill=0;startFill=0;endSize=8;html=1;', 160, 0, '', 'Inner Class', null, 'inner class'),
+		this.addEntry('uml relation', function()
+		{
+			var edge = new mxCell('hasMany', new mxGeometry(0, 0, 0, 0), 'endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;');
+			edge.geometry.setTerminalPoint(new mxPoint(0, 0), true);
+			edge.geometry.setTerminalPoint(new mxPoint(160, 0), false);
+			edge.geometry.relative = true;
+			edge.edge = true;
+			
+	    	/*var cell1 = new mxCell('0..n', new mxGeometry(-1, 0, 0, 0), 'resizable=0;html=1;align=left;verticalAlign=top;labelBackgroundColor=#ffffff;fontSize=10;');
+	    	cell1.geometry.relative = true;
+	    	cell1.setConnectable(false);
+	    	cell1.vertex = true;
+	    	edge.insert(cell1);
+			
+	    	var cell2 = new mxCell('1', new mxGeometry(1, 0, 0, 0), 'resizable=0;html=1;align=right;verticalAlign=top;labelBackgroundColor=#ffffff;fontSize=10;');
+	    	cell2.geometry.relative = true;
+	    	cell2.setConnectable(false);
+	    	cell2.vertex = true;
+	    	edge.insert(cell2);*/
+	    	
+			return sb.createEdgeTemplateFromCells([edge], 160, 0, 'Relation HasMany');
+		}),
+		this.addEntry('uml relation', function()
+		{
+			var edge = new mxCell('hasAndBelongsToMany', new mxGeometry(0, 0, 0, 0), 'endArrow=diamondThin;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;');
+			edge.geometry.setTerminalPoint(new mxPoint(0, 0), true);
+			edge.geometry.setTerminalPoint(new mxPoint(160, 0), false);
+			edge.geometry.relative = true;
+			edge.edge = true;
+			
+	    	/*var cell1 = new mxCell('0..n', new mxGeometry(-1, 0, 0, 0), 'resizable=0;html=1;align=left;verticalAlign=top;labelBackgroundColor=#ffffff;fontSize=10;');
+	    	cell1.geometry.relative = true;
+	    	cell1.setConnectable(false);
+	    	cell1.vertex = true;
+	    	edge.insert(cell1);
+			
+	    	var cell2 = new mxCell('1', new mxGeometry(1, 0, 0, 0), 'resizable=0;html=1;align=right;verticalAlign=top;labelBackgroundColor=#ffffff;fontSize=10;');
+	    	cell2.geometry.relative = true;
+	    	cell2.setConnectable(false);
+	    	cell2.vertex = true;
+	    	edge.insert(cell2);*/
+	    	
+			return sb.createEdgeTemplateFromCells([edge], 160, 0, 'Relation hasAndBelongsToMany');
+		}),
+		//this.createEdgeTemplateEntry('endArrow=block;startArrow=block;endFill=1;startFill=1;html=1;', 160, 0, '', 'hasAndBelongsToMany', null, 'uml relation'),
+		/*this.createEdgeTemplateEntry('endArrow=open;endSize=12;dashed=1;html=1;', 160, 0, 'Use', 'Dependency', null, 'uml dependency use'),
+		this.createEdgeTemplateEntry('endArrow=block;endSize=16;endFill=0;html=1;', 160, 0, 'Extends', 'Generalization', null, 'uml generalization extend'),*/
+	 	this.createEdgeTemplateEntry('endArrow=block;startArrow=block;endFill=1;startFill=1;html=1;', 160, 0, '', 'hasAndBelongsToMany Link', null, 'uml relation'),
+	 	/*this.createEdgeTemplateEntry('endArrow=open;startArrow=circlePlus;endFill=0;startFill=0;endSize=8;html=1;', 160, 0, '', 'Inner Class', null, 'inner class'),
 	 	this.createEdgeTemplateEntry('endArrow=open;startArrow=cross;endFill=0;startFill=0;endSize=8;startSize=10;html=1;', 160, 0, '', 'Terminate', null, 'terminate'),
-	 	this.createEdgeTemplateEntry('endArrow=block;dashed=1;endFill=0;endSize=12;html=1;', 160, 0, '', 'Implementation', null, 'realization implementation'),
-	 	this.createEdgeTemplateEntry('endArrow=diamondThin;endFill=0;endSize=24;html=1;', 160, 0, '', 'Aggregation 2', null, 'aggregation'),
-	 	this.createEdgeTemplateEntry('endArrow=diamondThin;endFill=1;endSize=24;html=1;', 160, 0, '', 'Composition 2', null, 'composition'),
-	 	this.createEdgeTemplateEntry('endArrow=open;endFill=1;endSize=12;html=1;', 160, 0, '', 'Association 3', null, 'association')
+	 	this.createEdgeTemplateEntry('endArrow=block;dashed=1;endFill=0;endSize=12;html=1;', 160, 0, '', 'Implementation', null, 'realization implementation'),*/
+	 	//this.createEdgeTemplateEntry('endArrow=diamondThin;endFill=0;endSize=24;html=1;', 160, 0, '', 'Aggregation 2', null, 'aggregation'),
+	 	/*this.createEdgeTemplateEntry('endArrow=diamondThin;endFill=1;endSize=24;html=1;', 160, 0, '', 'Composition 2', null, 'composition'),
+	 	this.createEdgeTemplateEntry('endArrow=open;endFill=1;endSize=12;html=1;', 160, 0, '', 'Association 3', null, 'association')*/
 	];
 	
 	this.addPaletteFunctions('uml', mxResources.get('uml'), expand || false, fns);
 };
-
+Sidebar.prototype.addInfoPanel = function(){
+	
+}
 /**
  * Adds the BPMN library to the sidebar.
  */

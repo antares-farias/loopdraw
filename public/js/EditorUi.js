@@ -3329,16 +3329,16 @@ EditorUi.prototype.saveFileServer = function(forceDialog)
 	}
 };
 EditorUi.prototype.updateToJson = function(forceDialog){
-	console.log('updateToJson');
 	test.models.loadJSON(test.models.updateModels);
 	//test.models.updateModels({});
 };
-EditorUi.prototype.compareToJson = function(forceDialog){
-	console.log('compareToJson');
+/*EditorUi.prototype.compareToJson = function(forceDialog){
 	test.debug("asdf", "bbb");
-};
+};*/
+EditorUi.prototype.updateJson = function(){
+	test.models.updateJson();
+}
 EditorUi.prototype.loadFromJson = function(forceDialog){
-	console.log('loadFromJson');
 	var cells = [];
 	var temp_cells = this.editor.graph.model.cells[0].children;
 	var start_i = 1;
@@ -3994,6 +3994,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
 
 		keyHandler.bindAction(49, true, 'loadFromJson', true); // Ctrl+Shift+1
 		keyHandler.bindAction(50, true, 'updateToJson', true); // Ctrl+Shift+2
+		keyHandler.bindAction(51, true, 'updateJson', true); // Ctrl+Shift+3
 
 		keyHandler.bindAction(65, true, 'selectAll'); // Ctrl+A
 		keyHandler.bindAction(65, true, 'selectNone', true); // Ctrl+A

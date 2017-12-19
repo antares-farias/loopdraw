@@ -459,7 +459,7 @@ Menus.prototype.init = function()
 	})));
 	this.put('file', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['saveXMLServer', '-', 'loadFromJson', 'updateToJson', '-', 'pageSetup', 'print'], parent);
+		this.addMenuItems(menu, ['saveXMLServer', '-', 'loadFromJson', 'updateToJson', 'updateJson','-', 'pageSetup', 'print'], parent);
 	})));
 	this.put('edit', new Menu(mxUtils.bind(this, function(menu, parent)
 	{

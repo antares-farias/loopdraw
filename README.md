@@ -67,6 +67,10 @@ Rebuild : This will Detele the current Diagram and reaload it from JSON
 [Ctrl+Shift+2] File->Update From JSON
 ````
 
+<b>[Experimental]</b> Update : This will update the JSON files with the model info
+````
+[Ctrl+Shift+3] File->Update Models
+````
 
 ## Tests
 ````sh
@@ -76,12 +80,17 @@ $ npm test
 
 Licensed for use under the MIT License (MIT). Please see LICENSE for more information.
 
+##Release 0.4.0
+
+- Update JSON file
+- Update SideBar
+- Start Log/Message Panel
+
 ##Release 0.3.5
 
-- Revmoe extra sectons on Menu
+- Remove extra sectons on Menu
 - Remove Extra Tools on Tool Bar
 - Update Help
 - Update About
 - Update Hotkeys actions
--
-
+- Fix reload issue

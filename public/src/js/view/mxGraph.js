@@ -6031,7 +6031,7 @@ mxGraph.prototype.moveCells = function(cells, dx, dy, clone, target, evt, mappin
 
 			if (target != null)
 			{
-				var index = this.model.getChildCount(target);
+				var index = this.model.getChildCount(target)+1;
 				this.cellsAdded(cells, target, index, null, null, true);
 			}
 
@@ -10810,7 +10810,11 @@ mxGraph.prototype.getDefaultParent = function()
 		if (parent == null)
 		{
 			var root = this.model.getRoot();
-			parent = this.model.getChildAt(root, 0);
+			parent = this.model.getChildAt(root, 1);
+			parent = root;
+			if(!parent){
+				parent = this.model.getChildAt(root, 0);
+			}
 		}
 	}
 	

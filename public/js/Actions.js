@@ -73,6 +73,7 @@ Actions.prototype.init = function()
 	this.addAction('saveXMLServer', function() { ui.saveFileServer(false); }, null, null, Editor.ctrlKey + '+Shift+S').isEnabled = isGraphEnabled;
 	this.addAction('loadFromJson', function() { ui.loadFromJson(false); }, null, 'asdf', Editor.ctrlKey + '+Shift+1');
 	this.addAction('updateToJson', function() { ui.updateToJson(false); }, null, null, Editor.ctrlKey + '+Shift+2');
+	this.addAction('updateJson', function() { ui.updateJson(); }, null, null, Editor.ctrlKey + '+Shift+3');
 	//this.addAction('compareToJson', function() { ui.compareToJson(false); }, null, null, Editor.ctrlKey + '+Shift+C').isEnabled = isGraphEnabled;
 	this.addAction('export...', function() { ui.showDialog(new ExportDialog(ui).container, 300, 230, true, true); });
 	this.addAction('editDiagram...', function()
