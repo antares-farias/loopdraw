@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Loopdraw</title>
+    <title>Loopdraw help</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" type="text/css" href="../styles/help.css">
 
@@ -22,17 +22,249 @@
 	<meta name="msapplication-TileColor" content="#ffffff">
 	<meta name="msapplication-TileImage" content="ms-icon-144x144.png">
 	<meta name="theme-color" content="#ffffff">
-
+	<script type="text/javascript">
+		mxBasePath = '/src';
+		mxImageBasePath  = '/src/images';
+	</script>
+	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<script type="text/javascript" src="../js/EditorUi.js"></script>
+	<script type="text/javascript" src="../js/Editor.js"></script>
+	<script type="text/javascript">
+		//mxBasePath = '/src';
+		//mxImageBasePath  = '/src/images';
+		// Program starts here. Creates a sample graph in the
+		// DOM node with the specified ID. This function is invoked
+		// from the onLoad event handler of the document (see below).
+		function main(container, add)
+		{
+			if (mxClient.isBrowserSupported())
+			{
+				var divs = document.getElementsByTagName('*');
+				
+				for (var i = 0; i < divs.length; i++)
+				{
+					if (divs[i].className.toString().indexOf('mxgraph') >= 0)
+					{
+						(function(container)
+						{
+							var xml = mxUtils.getTextContent(container);
+							var xmlDocument = mxUtils.parseXml(xml);
+							
+							if (xmlDocument.documentElement != null && xmlDocument.documentElement.nodeName == 'mxGraphModel')
+							{
+								var decoder = new mxCodec(xmlDocument);
+								var node = xmlDocument.documentElement;
+		
+								container.innerHTML = '';
+		
+								var graph = new mxGraph(container);
+								
+        						graph.setHtmlLabels(true);
+								graph.centerZoom = false;
+								graph.setTooltips(false);
+								graph.setEnabled(false);
+								
+								// Changes the default style for edges "in-place"
+								var style = graph.getStylesheet().getDefaultEdgeStyle();
+								style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+								
+								// Enables panning with left mouse button
+								graph.panningHandler.useLeftButtonForPanning = true;
+								graph.panningHandler.ignoreCell = true;
+								graph.container.style.cursor = 'move';
+								graph.setPanning(true);
+								
+								if (divs[i].style.width == '' && divs[i].style.height == '')
+								{
+									graph.resizeContainer = true;
+								}
+								else
+								{
+									// Adds border for fixed size boxes
+									graph.border = 20;
+								}
+								
+								decoder.decode(node, graph.getModel());
+								graph.resizeContainer = false;
+								
+								// Adds zoom buttons in top, left corner
+								var buttons = document.createElement('div');
+								buttons.style.position = 'absolute';
+								buttons.style.overflow = 'visible';
+								var bs = graph.getBorderSizes();
+								buttons.style.top = (container.offsetTop + bs.y) + 'px';
+								buttons.style.left = (container.offsetLeft + bs.x) + 'px';
+								
+								var left = 0;
+								var bw = 16;
+								var bh = 16;
+								
+								if (mxClient.IS_QUIRKS)
+								{
+									bw -= 1;
+									bh -= 1;
+								}
+								
+								function addButton(label, funct)
+								{
+									var btn = document.createElement('div');
+									mxUtils.write(btn, label);
+									btn.style.position = 'absolute';
+									btn.style.backgroundColor = 'transparent';
+									btn.style.border = '1px solid gray';
+									btn.style.textAlign = 'center';
+									btn.style.fontSize = '10px';
+									btn.style.cursor = 'hand';
+									btn.style.width = bw + 'px';
+									btn.style.height = bh + 'px';
+									btn.style.left = left + 'px';
+									btn.style.top = '0px';
+									
+									mxEvent.addListener(btn, 'click', function(evt)
+									{
+										funct();
+										mxEvent.consume(evt);
+									});
+									
+									left += bw;
+									
+									buttons.appendChild(btn);
+								};
+								
+								addButton('+', function()
+								{
+									graph.zoomIn();
+								});
+								
+								addButton('-', function()
+								{
+									graph.zoomOut();
+								});
+								
+								if (container.nextSibling != null)
+								{
+									container.parentNode.insertBefore(buttons, container.nextSibling);
+								}
+								else
+								{
+									container.appendChild(buttons);
+								}
+							}
+						})(divs[i]);
+					}
+				}
+			}
+		};
+		function start(){
+			//graphCont_model
+			main(document.getElementById('graphContainer'), 'hasmanythough');
+			main(document.getElementById('graphCont_model'), 'model');
+		}
+	</script>
+	<style>
+		.half,.geDiagramContainer{
+			float: left;
+			width: 50% !important;
+		}
+	</style>
 </head>
-<body>
+<body onload="start();">
 	<h1><img src="../logo.png" width="100px"/>LoopDraw Help</h1>
+	<!--h1>Content</h1>
+	<ul>
+		<li><a href=""
+	</ul-->
+
+	<h2>Content</h2>
+	<ul>
+		<li><a href="#notes">Important notes</a></li>
+		<li><a href="#format">Format Models</a></li>
+		<li><a href="#functions">Functions</a></li>
+	</ul>
+	<h2 id="notes">Important notes</h2>
+		<ul>
+			<li>When you drop properties to the Model sometimes does not put it inside the model, to walk arround from this drop the property any where and then drag and drop it inside the the model and it should work now</li>
+			<li>When you link a relation make sure that the propertie/relation highlight to make a proper connection if the conection is made to the entire model the json generated wont work</li>
+		</ul>
+	<h2 id="format">Format Model</h2>
+	<div class="mxgraph" style="position:relative;overflow:auto;">
+		&lt;mxGraphModel dx=&quot;976&quot; dy=&quot;862&quot; grid=&quot;1&quot; gridSize=&quot;10&quot; guides=&quot;1&quot; tooltips=&quot;1&quot; connect=&quot;1&quot; arrows=&quot;1&quot; fold=&quot;1&quot; page=&quot;1&quot; pageScale=&quot;1&quot; pageWidth=&quot;850&quot; pageHeight=&quot;1100&quot; background=&quot;#ffffff&quot;&gt; &lt;root&gt; &lt;mxCell id=&quot;0&quot;/&gt; &lt;mxCell id=&quot;-1&quot; parent=&quot;0&quot;/&gt; &lt;mxCell id=&quot;1&quot; value=&quot;&amp;lt;div&amp;gt;&amp;lt;b&amp;gt;ModelName&amp;lt;/b&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;div&amp;gt;&amp;lt;i&amp;gt;&amp;amp;lt;PersistedModel&amp;amp;gt;&amp;lt;/i&amp;gt;&amp;lt;/div&amp;gt;&quot; style=&quot;swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;collapsible=1;marginBottom=16;swimlaneFillColor=#ffffff;html=1;rounded=1;shadow=1;marginTop=6;strokeColor=#000000;&quot; parent=&quot;-1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry x=&quot;30&quot; y=&quot;26&quot; width=&quot;210&quot; height=&quot;148&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.0.3&quot; value=&quot;&quot; style=&quot;line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;42&quot; width=&quot;210&quot; height=&quot;1&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.0.0&quot; value=&quot;* field:&amp;lt;b&amp;gt;type&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;50&quot; width=&quot;210&quot; height=&quot;30&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.0.1&quot; value=&quot;fk_name(FK)@&amp;lt;b&amp;gt;relation_name&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;80&quot; width=&quot;210&quot; height=&quot;26&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.0.2&quot; value=&quot;&quot; style=&quot;line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;106&quot; width=&quot;210&quot; height=&quot;1&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;973.6587552356846&quot; value=&quot;&amp;lt;p&amp;gt;relation_name@&amp;lt;b&amp;gt;model_name&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;&quot; style=&quot;strokeColor=none;portConstraint=eastwest;rounded=1;html=1;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;114&quot; width=&quot;210&quot; height=&quot;34&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;/root&gt; &lt;/mxGraphModel&gt; 
+	</div>
+	<div class="half">
+		<h2>Notes of format</h2>
+		<h2>Model</h2>
+		<ul>
+			<li>Model Name and extended model should be separated by enter</li>
+			<li>Extended model should be between "&lt...&gt"</li>
+			<li>If required field should have an *</li>
+			<li>Field and type should be separated by :</li>
+			<li>Foreng key should have (FK) after the name</li>
+			<li>Relations should be separated by @</li>
+			<li>For visual help is advice to separate relations and properties</li>
+			<li>There is no need of styling bold or itallics for the model definition</li>
+		</ul>
+	</div>
+	<div style="clear:both"></div>
+	<div class="mxgraph" style="position:relative;overflow:auto;">
+		&lt;mxGraphModel dx=&quot;1426&quot; dy=&quot;862&quot; grid=&quot;1&quot; gridSize=&quot;10&quot; guides=&quot;1&quot; tooltips=&quot;1&quot; connect=&quot;1&quot; arrows=&quot;1&quot; fold=&quot;1&quot; page=&quot;1&quot; pageScale=&quot;1&quot; pageWidth=&quot;850&quot; pageHeight=&quot;1100&quot; background=&quot;#ffffff&quot;&gt; &lt;root&gt; &lt;mxCell id=&quot;0&quot;/&gt; &lt;mxCell id=&quot;-1&quot; parent=&quot;0&quot;/&gt; &lt;mxCell id=&quot;1&quot; value=&quot;&amp;lt;div&amp;gt;&amp;lt;b&amp;gt;ModelName&amp;lt;/b&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;div&amp;gt;&amp;lt;i&amp;gt;&amp;amp;lt;PersistedModel&amp;amp;gt;&amp;lt;/i&amp;gt;&amp;lt;/div&amp;gt;&quot; style=&quot;swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;html=1;rounded=1;shadow=1;marginTop=6;&quot; parent=&quot;-1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry x=&quot;30&quot; y=&quot;41&quot; width=&quot;240&quot; height=&quot;130&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.0.0&quot; value=&quot;&quot; style=&quot;line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;42&quot; width=&quot;240&quot; height=&quot;8&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.0.1&quot; value=&quot;modelnamechilds@&amp;lt;b&amp;gt;modelnamechilds&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;50&quot; width=&quot;240&quot; height=&quot;20&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;1.0&quot; value=&quot;fk_name1(FK)@&amp;lt;b&amp;gt;modelnamechild2&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;70&quot; width=&quot;240&quot; height=&quot;20&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;21&quot; value=&quot;rel_hbtm_c@&amp;lt;b&amp;gt;modelnamechild3&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;90&quot; width=&quot;240&quot; height=&quot;20&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;3&quot; value=&quot;rel_htm_2@&amp;lt;b&amp;gt;modelnamechild4&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;110&quot; width=&quot;240&quot; height=&quot;20&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;2&quot; value=&quot;&amp;lt;div&amp;gt;&amp;lt;b&amp;gt;ModelNameChild&amp;lt;/b&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;div&amp;gt;&amp;lt;i&amp;gt;&amp;amp;lt;PersistedModel&amp;amp;gt;&amp;lt;/i&amp;gt;&amp;lt;/div&amp;gt;&quot; style=&quot;swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=38;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;html=1;rounded=1;shadow=1;marginTop=6;&quot; parent=&quot;-1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry x=&quot;440&quot; y=&quot;45&quot; width=&quot;210&quot; height=&quot;126&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.1.2&quot; value=&quot;&quot; style=&quot;line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;&quot; parent=&quot;2&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;44&quot; width=&quot;210&quot; height=&quot;1&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.1.0&quot; value=&quot;modelnameId@&amp;lt;b&amp;gt;modelname&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;2&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;45&quot; width=&quot;210&quot; height=&quot;20&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;4&quot; value=&quot;modelnameId@&amp;lt;b&amp;gt;modelname2&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;2&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;65&quot; width=&quot;210&quot; height=&quot;20&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.1.1&quot; value=&quot;&quot; style=&quot;line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;&quot; parent=&quot;2&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;85&quot; width=&quot;210&quot; height=&quot;1&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;5&quot; value=&quot;rel_hbtm_name@&amp;lt;b&amp;gt;modelname3&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;2&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;86&quot; width=&quot;210&quot; height=&quot;20&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;6&quot; value=&quot;rel_hmt_1@&amp;lt;b&amp;gt;modelname4&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;2&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;106&quot; width=&quot;210&quot; height=&quot;20&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;32&quot; value=&quot;hasOne&quot; style=&quot;endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=0;edgeStyle=orthogonalEdgeStyle;&quot; parent=&quot;-1&quot; edge=&quot;1&quot; target=&quot;0.0.1&quot; source=&quot;0.1.0&quot;&gt; &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;&gt; &lt;mxPoint x=&quot;300&quot; y=&quot;250&quot; as=&quot;sourcePoint&quot;/&gt; &lt;mxPoint x=&quot;295.28571428571433&quot; y=&quot;218&quot; as=&quot;targetPoint&quot;/&gt; &lt;Array as=&quot;points&quot;/&gt; &lt;/mxGeometry&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;7&quot; value=&quot;&amp;lt;div&amp;gt;&amp;lt;b&amp;gt;ModelNameThrough&amp;lt;/b&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;div&amp;gt;&amp;lt;i&amp;gt;&amp;amp;lt;PersistedModel&amp;amp;gt;&amp;lt;/i&amp;gt;&amp;lt;/div&amp;gt;&quot; style=&quot;swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=38;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;html=1;rounded=1;shadow=1;marginTop=6;&quot; parent=&quot;-1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry x=&quot;200&quot; y=&quot;276&quot; width=&quot;230&quot; height=&quot;114&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.3.0&quot; value=&quot;modelnamechildId@&amp;lt;b&amp;gt;modelnamechild&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;7&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;44&quot; width=&quot;230&quot; height=&quot;32&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;8&quot; value=&quot;modelnameId@&amp;lt;b&amp;gt;modelname&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;7&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;76&quot; width=&quot;230&quot; height=&quot;30&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.3.2&quot; value=&quot;&quot; style=&quot;line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;&quot; parent=&quot;7&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;106&quot; width=&quot;230&quot; height=&quot;8&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;9&quot; value=&quot;hasMany&quot; style=&quot;endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;&quot; parent=&quot;-1&quot; edge=&quot;1&quot; target=&quot;1.0&quot; source=&quot;4&quot;&gt; &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;&gt; &lt;mxPoint x=&quot;330&quot; y=&quot;260&quot; as=&quot;sourcePoint&quot;/&gt; &lt;mxPoint x=&quot;381&quot; y=&quot;120&quot; as=&quot;targetPoint&quot;/&gt; &lt;Array as=&quot;points&quot;&gt; &lt;mxPoint x=&quot;260&quot; y=&quot;120&quot;/&gt; &lt;mxPoint x=&quot;260&quot; y=&quot;120&quot;/&gt; &lt;/Array&gt; &lt;/mxGeometry&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;10&quot; value=&quot;hasAndBelongsToMany&quot; style=&quot;endArrow=diamondThin;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;&quot; parent=&quot;-1&quot; source=&quot;21&quot; target=&quot;5&quot; edge=&quot;1&quot;&gt; &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;&gt; &lt;mxPoint x=&quot;265&quot; y=&quot;200&quot; as=&quot;sourcePoint&quot;/&gt; &lt;mxPoint x=&quot;330&quot; y=&quot;153&quot; as=&quot;targetPoint&quot;/&gt; &lt;Array as=&quot;points&quot;&gt; &lt;mxPoint x=&quot;330&quot; y=&quot;146&quot;/&gt; &lt;mxPoint x=&quot;330&quot; y=&quot;149&quot;/&gt; &lt;/Array&gt; &lt;/mxGeometry&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;11&quot; value=&quot;hasMany&quot; style=&quot;endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;exitX=0.605;exitY=1.038;exitPerimeter=0;&quot; parent=&quot;-1&quot; source=&quot;3&quot; target=&quot;8&quot; edge=&quot;1&quot;&gt; &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;&gt; &lt;mxPoint x=&quot;140&quot; y=&quot;180&quot; as=&quot;sourcePoint&quot;/&gt; &lt;mxPoint x=&quot;310&quot; y=&quot;360&quot; as=&quot;targetPoint&quot;/&gt; &lt;Array as=&quot;points&quot;&gt; &lt;mxPoint x=&quot;175&quot; y=&quot;369&quot;/&gt; &lt;/Array&gt; &lt;/mxGeometry&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;12&quot; value=&quot;hasMany&quot; style=&quot;endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;&quot; parent=&quot;-1&quot; source=&quot;6&quot; target=&quot;0.3.0&quot; edge=&quot;1&quot;&gt; &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;&gt; &lt;mxPoint x=&quot;410&quot; y=&quot;510&quot; as=&quot;sourcePoint&quot;/&gt; &lt;mxPoint x=&quot;570&quot; y=&quot;510&quot; as=&quot;targetPoint&quot;/&gt; &lt;Array as=&quot;points&quot;&gt; &lt;mxPoint x=&quot;470&quot; y=&quot;332&quot;/&gt; &lt;/Array&gt; &lt;/mxGeometry&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;1.0.1&quot; value=&quot;hasManyThrough&quot; style=&quot;endArrow=diamondThin;dashed=1;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;&quot; parent=&quot;-1&quot; source=&quot;3&quot; target=&quot;6&quot; edge=&quot;1&quot;&gt; &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;&gt; &lt;mxPoint x=&quot;230&quot; y=&quot;220&quot; as=&quot;sourcePoint&quot;/&gt; &lt;mxPoint x=&quot;390&quot; y=&quot;220&quot; as=&quot;targetPoint&quot;/&gt; &lt;Array as=&quot;points&quot;/&gt; &lt;/mxGeometry&gt; &lt;/mxCell&gt; &lt;/root&gt; &lt;/mxGraphModel&gt; 
+	</div>
+	<!--div class="mxgraph" style="position:relative;overflow:auto;">
+		&lt;mxGraphModel dx=&quot;976&quot; dy=&quot;862&quot; grid=&quot;1&quot; gridSize=&quot;10&quot; guides=&quot;1&quot; tooltips=&quot;1&quot; connect=&quot;1&quot; arrows=&quot;1&quot; fold=&quot;1&quot; page=&quot;1&quot; pageScale=&quot;1&quot; pageWidth=&quot;850&quot; pageHeight=&quot;1100&quot; background=&quot;#ffffff&quot;&gt; &lt;root&gt; &lt;mxCell id=&quot;0&quot;/&gt; &lt;mxCell id=&quot;-1&quot; parent=&quot;0&quot;/&gt; &lt;mxCell id=&quot;1&quot; value=&quot;&amp;lt;div&amp;gt;&amp;lt;b&amp;gt;ModelName&amp;lt;/b&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;div&amp;gt;&amp;lt;i&amp;gt;&amp;amp;lt;PersistedModel&amp;amp;gt;&amp;lt;/i&amp;gt;&amp;lt;/div&amp;gt;&quot; style=&quot;swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;html=1;rounded=1;shadow=1;marginTop=6;&quot; parent=&quot;-1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry x=&quot;30&quot; y=&quot;30&quot; width=&quot;200&quot; height=&quot;76&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.0.0&quot; value=&quot;&quot; style=&quot;line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;42&quot; width=&quot;200&quot; height=&quot;8&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.0.1&quot; value=&quot;fk_name(FK)@&amp;lt;b&amp;gt;relation_name&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;50&quot; width=&quot;200&quot; height=&quot;26&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;2&quot; value=&quot;&amp;lt;div&amp;gt;&amp;lt;b&amp;gt;ModelNameChild&amp;lt;/b&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;div&amp;gt;&amp;lt;i&amp;gt;&amp;amp;lt;PersistedModel&amp;amp;gt;&amp;lt;/i&amp;gt;&amp;lt;/div&amp;gt;&quot; style=&quot;swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=38;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;html=1;rounded=1;shadow=1;marginTop=6;&quot; parent=&quot;-1&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry x=&quot;370&quot; y=&quot;39&quot; width=&quot;160&quot; height=&quot;72&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.1.2&quot; value=&quot;&quot; style=&quot;line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;&quot; parent=&quot;2&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;64&quot; width=&quot;160&quot; height=&quot;1&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.1.0&quot; value=&quot;field@&amp;lt;b&amp;gt;modelname&amp;lt;/b&amp;gt;&quot; style=&quot;text;strokeColor=none;fillColor=none;align=center;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;&quot; parent=&quot;2&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;44&quot; width=&quot;160&quot; height=&quot;20&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;0.1.1&quot; value=&quot;&quot; style=&quot;line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;&quot; parent=&quot;2&quot; vertex=&quot;1&quot;&gt; &lt;mxGeometry y=&quot;64&quot; width=&quot;160&quot; height=&quot;1&quot; as=&quot;geometry&quot;/&gt; &lt;/mxCell&gt; &lt;mxCell id=&quot;3&quot; value=&quot;hasOne&quot; style=&quot;endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=0;edgeStyle=orthogonalEdgeStyle;exitX=1.005;exitY=0.269;exitPerimeter=0;entryX=-0.031;entryY=0.269;entryPerimeter=0;&quot; parent=&quot;-1&quot; source=&quot;0.0.1&quot; target=&quot;0.1.0&quot; edge=&quot;1&quot;&gt; &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;&gt; &lt;mxPoint x=&quot;290&quot; y=&quot;150&quot; as=&quot;sourcePoint&quot;/&gt; &lt;mxPoint x=&quot;450&quot; y=&quot;150&quot; as=&quot;targetPoint&quot;/&gt; &lt;Array as=&quot;points&quot;&gt; &lt;mxPoint x=&quot;290&quot; y=&quot;87&quot;/&gt; &lt;mxPoint x=&quot;290&quot; y=&quot;88&quot;/&gt; &lt;/Array&gt; &lt;/mxGeometry&gt; &lt;/mxCell&gt; &lt;/root&gt; &lt;/mxGraphModel&gt; 
+	</div-->
+	<div class="half">
+		<h2>Relation</h2>
+		<h2>General</h2>
+		<ul>
+			<li>Make sure the link goes from the component relation to the component propertie</li>
+			<li>The Diamond end goes on the relation and the arrow end goes on the propertie</li>
+			<li>Both properties and relation should have @ symbol</li>
+			<li>Relation should have "(FK)" after the relation name</li>
+		</ul>
+		<h2>Has One / Has Many</h2>
+		<ul>
+			<li>Use the arrow pointing to the relation field and the diamond pointing to the propertie</li>
+		</ul>
+		<h2>Has and Belongs to Many</h2>
+		<ul>
+			<li>Does not import the direction</li>
+		</ul>
+		<h2>Has Many Through</h2>
+		<ul>
+			<li>Need to create 3 relation</li>
+			<li>One between the to Relation Field both end diamonds line dashed</li>
+			<li>One between the to Relation Field both end diamonds line dashed</li>
+			<li>One from each ModelThrough properties/relation make sure the arrow points to the propertie, also this are regular "has Many" relation links</li>		
+		</ul>
+	</div>
+	<h3>Output JSON</h3>
+	<img src="/src/images/output_json.png" style="max-width:100%;"/>
+	</br>
+	<div style="clear: both;"></div>
+	<h3 id="functions">Functions</h3>
 	<h2>Save to XML</h2>
 	<p>This will save in the server folders ( <models_folder>/diagram/ER_Model.xml) the XML of the current State of the Diagram</p>
 
 	<h2>Update Form JSON</h2>
 	<p>This will update from any change on the JSON files without changing the styling</p>
 	
+	<h2>Update JSON</h2>
+	<p>This will update your JSON files according to the current diagram configuration</p>
+
 	<h2>Reload JSON</h2>
 	<p>Delete current diagram and reload form the JSON, and applying default layout, <b>Styling will be lost</b></p>
+	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!--div id="graphCont_model"
+		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+	</div>
+	<div id="graphContainer"
+		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+	</div-->
+	<!--This graph is embedded in the page.
+	<div class="mxgraph" style="position:relative;background:#eeeeee;border:1px solid gray;overflow:auto;width:400px;height:200px;">&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" vertex="1" parent="1" value="Interval 1"&gt;&lt;mxGeometry x="380" y="0" width="140" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" vertex="1" parent="1" value="Interval 2"&gt;&lt;mxGeometry x="200" y="80" width="380" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="4" vertex="1" parent="1" value="Interval 3"&gt;&lt;mxGeometry x="40" y="140" width="260" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="5" vertex="1" parent="1" value="Interval 4"&gt;&lt;mxGeometry x="120" y="200" width="240" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" vertex="1" parent="1" value="Interval 5"&gt;&lt;mxGeometry x="420" y="260" width="80" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="7" edge="1" source="2" target="3" parent="1" value="Transfer1"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="420" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="8" edge="1" source="2" target="6" parent="1" value=""&gt;&lt;mxGeometry as="geometry" relative="1" y="-30"&gt;&lt;Array as="points"&gt;&lt;Object x="600" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="9" edge="1" source="3" target="4" parent="1" value="Transfer3"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="260" y="120"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="10" edge="1" source="4" target="5" parent="1" value="Transfer4"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="200" y="180"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="11" edge="1" source="4" target="6" parent="1" value="Transfer5"&gt;&lt;mxGeometry as="geometry" relative="1" y="-10"&gt;&lt;Array as="points"&gt;&lt;Object x="460" y="155"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;</div>
+	This graph is embedded in the page.
+	<div class="mxgraph" style="position:relative;background:#eeeeee;border:6px solid gray;overflow:auto;width:400px;height:200px;">&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" vertex="1" parent="1" value="Interval 1"&gt;&lt;mxGeometry x="380" y="20" width="140" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" vertex="1" parent="1" value="Interval 2"&gt;&lt;mxGeometry x="200" y="80" width="380" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="4" vertex="1" parent="1" value="Interval 3"&gt;&lt;mxGeometry x="40" y="140" width="260" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="5" vertex="1" parent="1" value="Interval 4"&gt;&lt;mxGeometry x="120" y="200" width="240" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" vertex="1" parent="1" value="Interval 5"&gt;&lt;mxGeometry x="420" y="260" width="80" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="7" edge="1" source="2" target="3" parent="1" value="Transfer1"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="420" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="8" edge="1" source="2" target="6" parent="1" value="Transfer2"&gt;&lt;mxGeometry as="geometry" relative="1" y="0"&gt;&lt;Array as="points"&gt;&lt;Object x="600" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="9" edge="1" source="3" target="4" parent="1" value="Transfer3"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="260" y="120"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="10" edge="1" source="4" target="5" parent="1" value="Transfer4"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="200" y="180"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="11" edge="1" source="4" target="6" parent="1" value="Transfer5"&gt;&lt;mxGeometry as="geometry" relative="1" y="-10"&gt;&lt;Array as="points"&gt;&lt;Object x="460" y="155"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;</div>
+	This graph is embedded in the page.
+	<div class="mxgraph" style="position:-->
 </body>
 </html>
+

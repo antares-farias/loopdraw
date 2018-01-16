@@ -4444,7 +4444,7 @@ mxGraph.prototype.insertRelationEdge = function(parent, id, value, source, targe
 		end  = 'diamondThin';
 	}
 	if (info.tag == "hasManyThrough"){
-		color = "#007FFF";
+		color = "#000000";
 	}
 	var assoc = new mxCell(info.tag, new mxGeometry(0, 0, 0, 0), 'endArrow='+end+';endSize=12;startArrow=diamondThin;startSize=14;dashed='+dashed+';startFill='+fill+';endFill='+fill+';edgeStyle=orthogonalEdgeStyle;strokeColor='+color+';');
 	assoc.geometry.setTerminalPoint(new mxPoint(0, 0), true);
@@ -10811,10 +10811,18 @@ mxGraph.prototype.getDefaultParent = function()
 		{
 			var root = this.model.getRoot();
 			parent = this.model.getChildAt(root, 1);
-			parent = root;
-			if(!parent){
+			var root = this.model.getRoot();
+			if(this.model.saved){
 				parent = this.model.getChildAt(root, 0);
 			}
+			else{
+				//parent = root;
+				parent = this.model.getChildAt(root, -1);
+				if(!parent){
+					parent = this.model.getChildAt(root, 0);
+				}
+			}
+
 		}
 	}
 	

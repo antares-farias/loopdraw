@@ -1,6 +1,6 @@
 {
   "name": "loopdraw",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Addon to Loopback 2.x and 3.x to make auto-diagram for the models",
   "main": "index.js",
   "scripts": {
